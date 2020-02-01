@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="LoverCloud.Core.Models.LoverAlbum">
+    <Position X="3.5" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAgACAAAAAAAAQQAAAAAEQAAAABAAAAAAA=</HashCode>
+      <FileName>Models\LoverAlbum.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Boy">
+    <Position X="15.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Boy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Entity">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Entity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Girl">
+    <Position X="13" Y="6" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Girl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Lover">
+    <Position X="10.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAACAAAAQAAAAAAAAAAAIAEAAAAAQAAAAAAIA=</HashCode>
+      <FileName>Models\Lover.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.MenstruationDescription">
+    <Position X="8" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\MenstruationDescription.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.MenstruationLog">
+    <Position X="5.5" Y="5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAABAAAAAAAAAAAgAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Models\MenstruationLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Person">
+    <Position X="14" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAADAAAAAAAAAAAAQAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Person.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.LoverPhoto">
+    <Position X="17.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAARAkAEBAAAAAAAAAAAAAAEQAGAAACAAAAAA=</HashCode>
+      <FileName>Models\LoverPhoto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.LoverAnniversary" Collapsed="true">
+    <Position X="11.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAgAAAAAAAAAAQAAAAAAAQBAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Lover.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.LoverLog">
+    <Position X="20" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAhAAAAAAAAAAgAAAQAAAAAQAAABAAAAAAAA=</HashCode>
+      <FileName>Models\LoverLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.LoverRequest" Collapsed="true">
+    <Position X="21.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\LoverRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LoverCloud.Core.Models.Tag" Collapsed="true">
+    <Position X="23.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Models\Tag.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

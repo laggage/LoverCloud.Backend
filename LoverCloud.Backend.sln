@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoverCloud.Api", "LoverCloud.Api\LoverCloud.Api.csproj", "{CD57FBCA-E9F5-4BB7-83A6-8896B0266B66}"
+	ProjectSection(ProjectDependencies) = postProject
+		{30ADD36D-02EF-405A-8751-CCF7142EF938} = {30ADD36D-02EF-405A-8751-CCF7142EF938}
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885} = {D4D351DC-5FF0-40A4-A547-B71B142C9885}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoverCloud.Core", "LoverCloud.Core\LoverCloud.Core.csproj", "{D4D351DC-5FF0-40A4-A547-B71B142C9885}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoverCloud.Infrastructure", "LoverCloud.Infrastructure\LoverCloud.Infrastructure.csproj", "{30ADD36D-02EF-405A-8751-CCF7142EF938}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885} = {D4D351DC-5FF0-40A4-A547-B71B142C9885}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoverCloud.Identity", "LoverCloud.Identity\LoverCloud.Identity.csproj", "{966AA70D-981C-4C91-BCC6-0A5673405872}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD57FBCA-E9F5-4BB7-83A6-8896B0266B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD57FBCA-E9F5-4BB7-83A6-8896B0266B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD57FBCA-E9F5-4BB7-83A6-8896B0266B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD57FBCA-E9F5-4BB7-83A6-8896B0266B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D351DC-5FF0-40A4-A547-B71B142C9885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30ADD36D-02EF-405A-8751-CCF7142EF938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30ADD36D-02EF-405A-8751-CCF7142EF938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30ADD36D-02EF-405A-8751-CCF7142EF938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30ADD36D-02EF-405A-8751-CCF7142EF938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{966AA70D-981C-4C91-BCC6-0A5673405872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{966AA70D-981C-4C91-BCC6-0A5673405872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{966AA70D-981C-4C91-BCC6-0A5673405872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{966AA70D-981C-4C91-BCC6-0A5673405872}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {182D9C1E-357F-4766-BCA5-2886BFF1156B}
+	EndGlobalSection
+EndGlobal
