@@ -35,7 +35,10 @@
 
             CreateMap<LoverRequestAddResource, LoverRequest>();
             CreateMap<LoverRequest, LoverRequestResource>();
-            
+
+            CreateMap<LoverRequest, LoverRequestUpdateResource>();
+            CreateMap<LoverRequestUpdateResource, LoverRequest>();
+
         }
     }
 }

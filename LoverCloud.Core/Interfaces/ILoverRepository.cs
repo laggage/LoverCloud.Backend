@@ -16,5 +16,6 @@
         Task<Lover> GetLoverByLoverCloudUserIdAsync(string loverCloudUserId);
         Task AddLoverRequestAsync(LoverRequest loverRequest);
         Task<LoverRequest> GetLoverRequestByGuidAsync(string guid);
+        Task AddLoverAsync(Lover lover);
     }
 }

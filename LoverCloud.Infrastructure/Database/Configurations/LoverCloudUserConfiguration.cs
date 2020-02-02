@@ -3,6 +3,7 @@
     using LoverCloud.Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
     internal class LoverCloudUserConfiguration : IEntityTypeConfiguration<LoverCloudUser>
     {
@@ -14,6 +15,8 @@
                 .HasColumnType("varchar(36)");
             builder.Property(x => x.Birth)
                 .HasColumnType("date");
+            builder.Property(x => x.Sex)
+                .HasConversion(new EnumToStringConverter<Sex>());
         }
     }
 }

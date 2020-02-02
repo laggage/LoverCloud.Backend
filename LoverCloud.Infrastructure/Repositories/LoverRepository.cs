@@ -76,12 +76,20 @@
 
         public LoverRequest GetLoverRequestByGuid(string guid)
         {
-            return dbContext.LoverRequests.FirstOrDefault(x => x.Guid == guid);
+            return dbContext.LoverRequests
+                .Include(x => x.Receiver)
+                .Include(x => x.Requester)
+                .FirstOrDefault(x => x.Guid == guid);
         }
 
         public Task<LoverRequest> GetLoverRequestByGuidAsync(string guid)
         {
             return Task.Run(() => GetLoverRequestByGuid(guid));
+        }
+
+        public async Task AddLoverAsync(Lover lover)
+        {
+            await dbContext.Lovers.AddAsync(lover);
         }
     }
 }

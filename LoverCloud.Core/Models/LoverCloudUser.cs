@@ -40,7 +40,7 @@
 
         public override string ToString()
         {
-            return $"{UserName}";
+            return $"{UserName}, {DateTime.Now.Year - Birth.Year}岁, {(Sex == Sex.Male ? "男" : "女")}";
         }
     }
 }

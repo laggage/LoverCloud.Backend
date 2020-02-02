@@ -4,7 +4,7 @@
     {
         public string Guid { get; set; }
         public LoverCloudUserResource Requester { get; set; }
-        public bool Succeed { get; set; }
+        public bool? Succeed { get; set; }
     }
 
     public class LoverRequestAddResource

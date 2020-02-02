@@ -68,16 +68,17 @@
             var requester = await GetLoverCloudUserAsync();
             if (requester == null) return Unauthorized();
             var receiver = await _userManager.FindByIdAsync(addResource.ReceiverGuid);
+            if (receiver == null) return BadRequest($"找不到Guid为 {addResource.ReceiverGuid} 的用户");
+
             if (receiver.Lover != null)
                 return BadRequest("对方已有情侣, 无法发出请求.");
             
             var loverRequest = _mapper.Map<LoverRequest>(addResource);
             loverRequest.Receiver = receiver;
             loverRequest.Requester = requester;
-            loverRequest.Succeed = false;
+            loverRequest.Succeed = null;
             loverRequest.RequestDate = DateTime.Now;
 
-            requester.LoverRequests = loverRequest;
             await _loverRepository.AddLoverRequestAsync(loverRequest);
             var result = await _unitOfWork.SaveChangesAsync();
             if (!result) throw new Exception();
@@ -97,8 +98,33 @@
             if (!(loverRequestToUpdate.ReceiverGuid == userId)) 
                 return BadRequest("非法用户, 无权操作");
 
+            var loverRequestToUpdateResource = _mapper.Map<LoverRequestUpdateResource>(loverRequestToUpdate);
+            loverRequestPatchDocument.ApplyTo(loverRequestToUpdateResource);
+            _mapper.Map(loverRequestToUpdateResource, loverRequestToUpdate);
 
-            throw new NotImplementedException();
+            if (loverRequestToUpdateResource.Succeed == true &&
+                loverRequestToUpdate.LoverGuid == null)
+            {
+                var users = new LoverCloudUser[]
+                {
+                    loverRequestToUpdate.Receiver,
+                    loverRequestToUpdate.Requester
+                };
+
+                var lover = new Lover
+                {
+                    Male = users.FirstOrDefault(x => x.Sex == Sex.Male),
+                    Female = users.FirstOrDefault(x => x.Sex == Sex.Female),
+                    RegisterDate = DateTime.Now
+                };
+                if (lover.Male == null || lover.Female == null)
+                    throw new Exception("操作失败");
+                await _loverRepository.AddLoverAsync(lover);
+            }
+            
+            if (!await _unitOfWork.SaveChangesAsync()) throw new Exception("保存数据到数据库失败");
+            
+            return NoContent();
         }
 
         /// <summary>
