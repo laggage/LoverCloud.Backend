@@ -6,6 +6,8 @@ namespace LoverCloud.Identity
     using IdentityModel;
     using IdentityServer4.Models;
     using IdentityServer4.Test;
+    using LoverCloud.Core.Models;
+    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
 
@@ -24,20 +26,25 @@ namespace LoverCloud.Identity
                 new ApiResource("LoverCloud", "情侣云")
             };
 
-        public static IEnumerable<TestUser> TestUsers =>
-            new TestUser[]
+        public static IEnumerable<LoverCloudUser> Users =>
+            new LoverCloudUser[]
             {
-                new TestUser
+                new LoverCloudUser
                 {
-                    Username = "yy",
-                    Password = "123456789",
-                    Claims = new Claim[]
-                    {
-                        new Claim("role", ""),
-                        new Claim(JwtClaimTypes.Scope, "LoverCloud")
-                    }
+                    UserName = "陈畏民",
+                    Email = "1634205628@qq.com",
+                    PhoneNumber = "13814307540",
+                    RegisterDate = DateTime.Now
+                },
+                new LoverCloudUser
+                {
+                    UserName = "朱容容",
+                    Email = "1324323815@qq.com",
+                    PhoneNumber = "15751118812",
+                    RegisterDate = DateTime.Now
                 }
             };
+            
 
         public static IEnumerable<Client> Clients =>
             new Client[]

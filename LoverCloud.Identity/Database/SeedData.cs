@@ -5,9 +5,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using IdentityServer4.Models;
-    using IdentityServer4.Test;
     using LoverCloud.Core.Models;
     using Microsoft.AspNetCore.Identity;
     using Serilog;
@@ -42,6 +40,8 @@
                 if (old != null)
                     configurationDbContext.Clients.Remove(old);
                 configurationDbContext.Clients.Add(client.ToEntity());
+
+                Log.Information($"Client definition find, clientName: {client.ClientName}");
             }
 
             foreach (ApiResource apiResource in Config.Apis)
@@ -49,6 +49,9 @@
                 var old = configurationDbContext.ApiResources.FirstOrDefault(x => x.Name == apiResource.Name);
                 if (old != null) configurationDbContext.ApiResources.Remove(old);
                 configurationDbContext.ApiResources.Add(apiResource.ToEntity());
+
+                Log.Information($"ApiResource definition find, api resource display name: {apiResource.DisplayName}");
+
             }
 
             foreach (IdentityResource identityResource in Config.Ids)
@@ -56,44 +59,34 @@
                 var old = configurationDbContext.IdentityResources.FirstOrDefault(x => x.Name == identityResource.Name);
                 if (old != null) configurationDbContext.IdentityResources.Remove(old);
                 configurationDbContext.IdentityResources.Add(identityResource.ToEntity());
+                Log.Information($"IdentityResource definition find, identity resource display name: {identityResource.DisplayName}");
             }
 
-            configurationDbContext.SaveChanges();
+            Log.Information($"Seed ConfigruationDbContext successed, seeded data numbers: {configurationDbContext.SaveChanges().ToString()}");
         }
 
         public static async Task EnsureSeedData(UserManager<LoverCloudUser> userManager)
         {
-            foreach (TestUser testUser in Config.TestUsers)
+            string pwd = "123456789";
+            foreach (var user in Config.Users)
             {
                 // 删除重复
                 if (await userManager.FindByNameAsync(
-                    testUser.Username) is LoverCloudUser userExist)
+                    user.UserName) is LoverCloudUser userExist)
                 {
                     await userManager.DeleteAsync(userExist);
                 }
 
                 var result = await userManager.CreateAsync(
-                    new LoverCloudUser(testUser.Username), testUser.Password);
+                    user, pwd);
                 if (!result.Succeeded)
-                {
                     Log.Error(
                         $"Failed to Create user. {result.Errors.First()?.Description}");
-                }
                 else
-                {
-                    var user = await userManager.FindByNameAsync(testUser.Username);
-
-                    var claims = testUser.Claims.ToList();
-                    var roleClaim = claims.FirstOrDefault(
-                        x => x.Type.Equals(
-                            "role", StringComparison.OrdinalIgnoreCase));
-                    if (roleClaim != null) claims.Remove(roleClaim);
-
-                    var role = roleClaim?.Value;
-                    if (!string.IsNullOrEmpty(role)) await userManager.AddToRoleAsync(user, role);
-                    await userManager.AddClaimsAsync(user, claims);
-                }
+                    Log.Information($"Create user {user.ToString()}");
             }
+
+            Log.Information($"Seed LoverCloudDbContext successed");
         }
     }
 }

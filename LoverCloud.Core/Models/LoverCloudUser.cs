@@ -37,5 +37,10 @@
         public virtual IList<LoverRequest> LoverRequests { get; set; }
         public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
         public virtual IList<MenstruationLog> MenstruationLogs { get; set; }
+
+        public override string ToString()
+        {
+            return $"{UserName}";
+        }
     }
 }
