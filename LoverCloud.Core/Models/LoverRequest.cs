@@ -11,6 +11,7 @@ namespace LoverCloud.Core.Models
         public LoverRequest()
         {
             Guid = System.Guid.NewGuid().ToString();
+            Succeed = null;
         }
 
         public string Guid { get; set; }
@@ -29,7 +30,7 @@ namespace LoverCloud.Core.Models
         /// <summary>
         /// 情侣请求是否成功
         /// </summary>
-        public bool Succeed { get; set; }
+        public bool? Succeed { get; set; }
         /// <summary>
         /// 情侣请求成功后该请求属于的情侣
         /// </summary>

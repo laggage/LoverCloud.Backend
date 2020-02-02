@@ -25,4 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\LoverCloud.Infrastructure\LoverCloud.Infrastructure.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Database\Migrations\" />
+  </ItemGroup>
 </Project>

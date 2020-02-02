@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LoverCloud.Identity.Database.Migrations
+namespace LoverCloud.Identity.Database.Migrations.PersistedGrantDb
 {
-    public partial class InitPersistedDb : Migration
+    public partial class InitPersistedGrantDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

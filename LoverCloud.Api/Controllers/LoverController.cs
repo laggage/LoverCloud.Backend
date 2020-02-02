@@ -77,7 +77,7 @@
             loverRequest.Succeed = false;
             loverRequest.RequestDate = DateTime.Now;
 
-            requester.LoverRequest = loverRequest;
+            requester.LoverRequests = loverRequest;
             await _loverRepository.AddLoverRequestAsync(loverRequest);
             var result = await _unitOfWork.SaveChangesAsync();
             if (!result) throw new Exception();

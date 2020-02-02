@@ -12,8 +12,8 @@
             builder.Property(x => x.Guid).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverRequest));
             builder.HasOne(x => x.Requester)
-                .WithOne()
-                .HasForeignKey<LoverRequest>(x => x.RequesterGuid)
+                .WithMany(x => x.LoverRequests)
+                .HasForeignKey(x => x.RequesterGuid)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Receiver)

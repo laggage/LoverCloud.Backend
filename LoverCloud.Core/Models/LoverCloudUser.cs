@@ -27,10 +27,14 @@
         public DateTime Birth { get; set; }
         public DateTime RegisterDate { get; set; }
         public Sex Sex { get; set; }
+        /// <summary>
+        /// 表示用户头像
+        /// </summary>
+        public string ProfileImage { get; set; }
 
         public virtual Lover Lover { get; set; }
 
-        public virtual LoverRequest LoverRequest { get; set; }
+        public virtual IList<LoverRequest> LoverRequests { get; set; }
         public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
         public virtual IList<MenstruationLog> MenstruationLogs { get; set; }
     }

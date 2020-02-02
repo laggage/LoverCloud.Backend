@@ -14,6 +14,6 @@
 
     public class LoverRequestUpdateResource
     {
-        public bool Succeed { get; set; }
+        public bool? Succeed { get; set; }
     }
 }

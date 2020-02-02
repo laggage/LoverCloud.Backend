@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LoverCloud.Identity.Database.Migrations
+namespace LoverCloud.Identity.Database.Migrations.ConfigurationDb
 {
     public partial class InitConfigurationDb : Migration
     {
