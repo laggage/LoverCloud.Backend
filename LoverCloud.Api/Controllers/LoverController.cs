@@ -6,6 +6,7 @@
     using LoverCloud.Infrastructure.Resources;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
@@ -61,6 +62,45 @@
             throw new NotImplementedException();
         }
 
+        [HttpPost("loverrequest", Name = "AddLoverRequest")]
+        public async Task<IActionResult> AddLoverRequest(LoverRequestAddResource addResource)
+        {
+            var requester = await GetLoverCloudUserAsync();
+            if (requester == null) return Unauthorized();
+            var receiver = await _userManager.FindByIdAsync(addResource.ReceiverGuid);
+            if (receiver.Lover != null)
+                return BadRequest("对方已有情侣, 无法发出请求.");
+            
+            var loverRequest = _mapper.Map<LoverRequest>(addResource);
+            loverRequest.Receiver = receiver;
+            loverRequest.Requester = requester;
+            loverRequest.Succeed = false;
+            loverRequest.RequestDate = DateTime.Now;
+
+            requester.LoverRequest = loverRequest;
+            await _loverRepository.AddLoverRequestAsync(loverRequest);
+            var result = await _unitOfWork.SaveChangesAsync();
+            if (!result) throw new Exception();
+            var loverRequestResource = _mapper.Map<LoverRequestResource>(loverRequest);
+
+            return CreatedAtRoute("AddLoverRequest", new { loverRequest.Guid }, loverRequestResource);
+        }
+
+        [HttpPatch("loverrequest/{guid}")]
+        public async Task<IActionResult> PatchLoverRequest([FromRoute]string guid,[FromBody] JsonPatchDocument<LoverRequestUpdateResource> loverRequestPatchDocument)
+        {
+            if (string.IsNullOrEmpty(guid)) return BadRequest();
+
+            var loverRequestToUpdate = await _loverRepository.GetLoverRequestByGuidAsync(guid);
+            if (loverRequestToUpdate == null) return BadRequest($"找不到对应的 LoverRequest({guid})");
+            string userId = GetLoverCloudUserId();
+            if (!(loverRequestToUpdate.ReceiverGuid == userId)) 
+                return BadRequest("非法用户, 无权操作");
+
+
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 通过 HttpContext 中的 User 属性获得对应的 <see cref="LoverCloudUser"/> 
         /// </summary>
@@ -73,7 +113,7 @@
         /// </summary>
         /// <returns> 经过身份认证的用户的Id </returns>
         private string GetLoverCloudUserId() =>
-            User.Claims.First(x => x.Type.Equals(ClaimTypes.NameIdentifier, StringComparison.OrdinalIgnoreCase))?.Value;
+            User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier, StringComparison.OrdinalIgnoreCase))?.Value;
 
     }
 }

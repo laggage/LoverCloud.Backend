@@ -63,5 +63,25 @@
         {
             return Task.Run(() => GetLoverByLoverCloudUserId(loverCloudUserId));
         }
+
+        public void AddLoverRequest(LoverRequest loverRequest)
+        {
+            dbContext.LoverRequests.Add(loverRequest);
+        }
+
+        public Task AddLoverRequestAsync(LoverRequest loverRequest)
+        {
+            return Task.Run(() => AddLoverRequest(loverRequest));
+        }
+
+        public LoverRequest GetLoverRequestByGuid(string guid)
+        {
+            return dbContext.LoverRequests.FirstOrDefault(x => x.Guid == guid);
+        }
+
+        public Task<LoverRequest> GetLoverRequestByGuidAsync(string guid)
+        {
+            return Task.Run(() => GetLoverRequestByGuid(guid));
+        }
     }
 }

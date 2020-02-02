@@ -2,9 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using Microsoft.AspNetCore.Identity;
 
-    public enum Sex { Male = 1, Female }
+    public enum Sex
+    {
+        [Description("男")]
+        Male = 1, 
+        [Description("女")]
+        Female
+    }
 
     public class LoverCloudUser : IdentityUser
     {

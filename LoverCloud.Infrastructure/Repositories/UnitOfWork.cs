@@ -2,6 +2,7 @@
 {
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Infrastructure.Database;
+    using System;
     using System.Threading.Tasks;
 
     public class UnitOfWork : IUnitOfWork
@@ -33,7 +34,7 @@
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }

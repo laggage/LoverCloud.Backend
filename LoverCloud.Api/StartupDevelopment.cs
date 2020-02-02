@@ -44,6 +44,8 @@
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
+
+                    options.User.AllowedUserNameCharacters = string.Empty;
                 })
                 .AddEntityFrameworkStores<LoverCloudDbContext>();
 

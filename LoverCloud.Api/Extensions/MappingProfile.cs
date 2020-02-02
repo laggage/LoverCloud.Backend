@@ -2,6 +2,7 @@
 {
     using AutoMapper;
     using LoverCloud.Core.Models;
+    using LoverCloud.Infrastructure.Extensions;
     using LoverCloud.Infrastructure.Resources;
 
     public class MappingProfile:Profile
@@ -26,8 +27,15 @@
             CreateMap<MenstruationLog, MenstruationLogResource>();
 
             CreateMap<LoverCloudUser, LoverCloudUserResource>()
-                .ForMember(x => x.Guid, c => c.MapFrom(s => s.Id));
-            CreateMap<LoverCloudUserAddResource, LoverCloudUser>();
+                .ForMember(x => x.Guid, c => c.MapFrom(s => s.Id))
+                .ForMember(x => x.Sex, c => c.MapFrom(y => y.Sex.GetDescription()));
+
+            CreateMap<LoverCloudUserAddResource, LoverCloudUser>()
+                .ForMember(m => m.Sex, c => c.MapFrom(x => x.Sex == "男" ? Sex.Male : Sex.Female));
+
+            CreateMap<LoverRequestAddResource, LoverRequest>();
+            CreateMap<LoverRequest, LoverRequestResource>();
+            
         }
     }
 }
