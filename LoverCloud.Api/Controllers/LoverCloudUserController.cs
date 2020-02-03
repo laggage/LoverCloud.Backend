@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Extensions;
     using LoverCloud.Infrastructure.Resources;
@@ -18,12 +19,15 @@
     {
         private readonly UserManager<LoverCloudUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly ILoverCloudUserRepository _repository;
 
         public LoverCloudUserController(UserManager<LoverCloudUser> userManager,
-            IMapper mapper)
+            IMapper mapper,
+            ILoverCloudUserRepository repository)
         {
             _userManager = userManager;
             _mapper = mapper;
+            _repository = repository;
         }
 
         /// <summary>
@@ -54,8 +58,24 @@
             string id = GetLoverCloudUserId();
             if (string.IsNullOrEmpty(id)) return Unauthorized();
 
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _repository.FindByIdAsync(id);
             var userResource = _mapper.Map<LoverCloudUserResource>(user);
+            if(userResource.Spouse != null)
+            {
+                userResource.Spouse.Spouse = null;
+                userResource.Spouse.ReceivedLoverRequests = null;
+            }
+
+            if (userResource.LoverRequests.Count > 0)
+            {
+                foreach (var loverRequest in userResource.LoverRequests)
+                {
+                    loverRequest.Requester = null;
+                    if (userResource.Spouse != null) 
+                        loverRequest.Receiver = null;
+                }
+            }
+
             var shapedUserResource = userResource.ToDynamicObject(fields);
 
             return Ok(shapedUserResource);

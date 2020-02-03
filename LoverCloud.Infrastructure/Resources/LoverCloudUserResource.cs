@@ -1,6 +1,5 @@
 ﻿namespace LoverCloud.Infrastructure.Resources
 {
-    using LoverCloud.Core.Models;
     using System;
     using System.Collections.Generic;
 
@@ -10,9 +9,10 @@
         public string UserName { get; set; }
         public string ProfileImageUrl { get; set; }
         public string Sex { get; set; }
-        public MenstruationLogResource MenstruationLogResource { get; set; }    
+        public MenstruationLogResource MenstruationLog { get; set; }    
         public LoverCloudUserResource Spouse { get; set; }
         public IList<LoverRequestResource> ReceivedLoverRequests { get; set; }
+        public IList<LoverRequestResource> LoverRequests { get; set; }
     }
 
     public class LoverCloudUserAddResource

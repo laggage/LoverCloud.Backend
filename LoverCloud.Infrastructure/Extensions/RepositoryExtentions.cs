@@ -10,6 +10,7 @@
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ILoverRepository, LoverRepository>();
+            services.AddScoped<ILoverCloudUserRepository, LoverCloudUserRepository>();
         }
     }
 }

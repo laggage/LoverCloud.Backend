@@ -1,8 +1,8 @@
-﻿using LoverCloud.Core.Interfaces;
-using System;
-
-namespace LoverCloud.Core.Models
+﻿namespace LoverCloud.Core.Models
 {
+    using LoverCloud.Core.Interfaces;
+    using System;
+
     /// <summary>
     /// 情侣请求, 请求和他/她成为情侣
     /// </summary>

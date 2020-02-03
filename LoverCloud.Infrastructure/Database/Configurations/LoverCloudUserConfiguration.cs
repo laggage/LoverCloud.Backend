@@ -17,6 +17,9 @@
                 .HasColumnType("date");
             builder.Property(x => x.Sex)
                 .HasConversion(new EnumToStringConverter<Sex>());
+            builder.HasOne(x => x.Lover)
+                .WithMany(x => x.LoverCloudUsers)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

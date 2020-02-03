@@ -24,7 +24,6 @@
         public DbSet<Lover> Lovers { get; set; }
         public DbSet<LoverAnniversary> LoverAnniversaries { get; set; }
         public DbSet<LoverLog> LoverLogs { get; set; }
-        public DbSet<LoverCloudUser> LoverCloudUsers { get; set; }
         public DbSet<LoverAlbum> LoverAlbums { get; set; }
         public DbSet<LoverPhoto> LoverPhotos { get; set; }
         public DbSet<LoverRequest> LoverRequests { get; set; }

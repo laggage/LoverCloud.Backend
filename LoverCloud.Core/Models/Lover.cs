@@ -4,24 +4,23 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// 情侣实体
+    /// </summary>
     public class Lover : IEntity
     {
         public Lover()
         {
             Guid = System.Guid.NewGuid().ToString();
+            LoverAnniversaries = new List<LoverAnniversary>();
+            LoverAlbums = new List<LoverAlbum>();
+            LoverPhotos = new List<LoverPhoto>();
+            LoverLogs = new List<LoverLog>();
+            LoverCloudUsers = new List<LoverCloudUser>();
         }
 
         public string Guid { get; set; }
-        /// <summary>
-        /// 男方
-        /// </summary>
-        public virtual LoverCloudUser Male { get; set; }
-        public string MaleGuid { get; set; }
-        /// <summary>
-        /// 女方
-        /// </summary>
-        public virtual LoverCloudUser Female { get; set; }
-        public string FemaleGuid { get; set; }
+
         /// <summary>
         /// 注册时间
         /// </summary>
@@ -34,13 +33,31 @@
         /// 女方是否为初恋
         /// </summary>
         public bool IsGirlFirstLove { get; set; }
-
+        /// <summary>
+        /// 情侣纪念日导航属性
+        /// </summary>
         public virtual IList<LoverAnniversary> LoverAnniversaries { get; set; }
+        /// <summary>
+        /// 情侣请求导航属性
+        /// </summary>
         public virtual LoverRequest LoverRequest { get; set; }
+        /// <summary>
+        /// 情侣相册导航属性
+        /// </summary>
         public virtual IList<LoverAlbum> LoverAlbums { get; set; }
+        /// <summary>
+        /// 情侣照片导航属性
+        /// </summary>
         public virtual IList<LoverPhoto> LoverPhotos { get; set; }
+        /// <summary>
+        /// 情侣日志导航属性
+        /// </summary>
         public virtual IList<LoverLog> LoverLogs { get; set; }
-        
+        /// <summary>
+        /// 情侣成员导航属性
+        /// Lover - LoverCloudUser 为 一对多 的关系 (一个 Lover 应该包含两个LoverCloudUser)
+        /// </summary>
+        public virtual IList<LoverCloudUser> LoverCloudUsers { get; set; }
     }
 
     /// <summary>

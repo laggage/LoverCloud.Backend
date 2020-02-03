@@ -11,14 +11,6 @@
             builder.HasKey(x => x.Guid);
             builder.Property(x => x.Guid).HasColumnType("varchar(36)");
             builder.ToTable(nameof(Lover));
-            builder.HasOne(x => x.Male)
-                .WithOne()
-                .HasForeignKey<Lover>(x => x.MaleGuid)
-                .OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.Female)
-                .WithOne(x => x.Lover)
-                .HasForeignKey<Lover>(x => x.FemaleGuid)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 

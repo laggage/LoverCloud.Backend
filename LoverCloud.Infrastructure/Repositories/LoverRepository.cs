@@ -42,7 +42,7 @@
         public List<LoverLog> GetLoverLogsByLoverCloudUserId(string loverCloudUserGuid)
         {
             if (string.IsNullOrEmpty(loverCloudUserGuid)) throw new ArgumentNullException(nameof(loverCloudUserGuid));
-            string loverGuid = dbContext.LoverCloudUsers.Include(x => x.Lover)
+            string loverGuid = dbContext.Users.Include(x => x.Lover)
                 .FirstOrDefault(x => x.Id == loverCloudUserGuid).Lover?.Guid;
             if (string.IsNullOrEmpty(loverGuid)) throw new Exception($"用户Id为{loverCloudUserGuid}的用户, 还没有对应的情侣");
             return GetLoverLogsByLoverGuid(loverGuid);
@@ -55,7 +55,7 @@
 
         public Lover GetLoverByLoverCloudUserId(string loverCloudUserId)
         {
-            return dbContext.LoverCloudUsers.Include(x => x.Lover)
+            return dbContext.Users.Include(x => x.Lover)
                 .FirstOrDefault(x => x.Id == loverCloudUserId).Lover;
         }
 
@@ -77,8 +77,8 @@
         public LoverRequest GetLoverRequestByGuid(string guid)
         {
             return dbContext.LoverRequests
-                .Include(x => x.Receiver)
-                .Include(x => x.Requester)
+                .Include(x => x.Receiver).ThenInclude(x => x.Lover)
+                .Include(x => x.Requester).ThenInclude(x => x.Lover)
                 .FirstOrDefault(x => x.Guid == guid);
         }
 

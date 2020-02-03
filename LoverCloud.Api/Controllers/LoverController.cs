@@ -34,6 +34,8 @@
             _mapper = mapper;
         }
 
+        #region Api-LoverLog
+
         /// <summary>
         /// 情侣日志Api接口
         /// </summary>
@@ -61,6 +63,11 @@
             if (!res) return NoContent();
             throw new NotImplementedException();
         }
+
+        #endregion
+
+
+        #region Api-LoverRequest
 
         [HttpPost("loverrequest", Name = "AddLoverRequest")]
         public async Task<IActionResult> AddLoverRequest(LoverRequestAddResource addResource)
@@ -103,7 +110,9 @@
             _mapper.Map(loverRequestToUpdateResource, loverRequestToUpdate);
 
             if (loverRequestToUpdateResource.Succeed == true &&
-                loverRequestToUpdate.LoverGuid == null)
+                loverRequestToUpdate.LoverGuid == null &&
+                loverRequestToUpdate.Receiver.Lover == null &&
+                loverRequestToUpdate.Requester.Lover == null)
             {
                 var users = new LoverCloudUser[]
                 {
@@ -113,12 +122,11 @@
 
                 var lover = new Lover
                 {
-                    Male = users.FirstOrDefault(x => x.Sex == Sex.Male),
-                    Female = users.FirstOrDefault(x => x.Sex == Sex.Female),
-                    RegisterDate = DateTime.Now
+                    
+                    RegisterDate = DateTime.Now,
+                    LoverCloudUsers = users
                 };
-                if (lover.Male == null || lover.Female == null)
-                    throw new Exception("操作失败");
+                loverRequestToUpdate.Lover = lover;
                 await _loverRepository.AddLoverAsync(lover);
             }
             
@@ -126,6 +134,8 @@
             
             return NoContent();
         }
+
+        #endregion
 
         /// <summary>
         /// 通过 HttpContext 中的 User 属性获得对应的 <see cref="LoverCloudUser"/> 

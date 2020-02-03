@@ -6,18 +6,15 @@
     using LoverCloud.Infrastructure.Extensions;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Newtonsoft.Json;
     using System.Reflection;
 
     public class StartupDevelopment
     {
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public StartupDevelopment(IConfiguration configuration)
         {
