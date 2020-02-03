@@ -82,7 +82,7 @@
         public void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
-            app.UseCors("");
+            app.UseCors(_configuration["CorSettings:PolicyName"]);
             app.UseRouting();
 
             app.UseAuthentication();
