@@ -3,11 +3,12 @@
     using LoverCloud.Core.Interfaces;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// 情侣实体
     /// </summary>
-    public class Lover : IEntity
+    public class Lover : IEntity, IEquatable<Lover>
     {
         public Lover()
         {

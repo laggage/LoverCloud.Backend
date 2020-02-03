@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.AspNetCore.Identity;
 
@@ -49,17 +50,5 @@
             return $"{UserName}, {DateTime.Now.Year - Birth.Year}岁, {(Sex == Sex.Male ? "男" : "女")}";
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            if (obj.GetType() != GetType()) return false;
-            if (ReferenceEquals(obj, this)) return true;
-            return string.Equals(Id, (obj as LoverCloudUser).Id);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id?.GetHashCode() ?? base.GetHashCode();
-        }
     }
 }
