@@ -10,7 +10,11 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Dynamic;
     using System.Reflection;
+    using System.Text;
 
     public class StartupDevelopment
     {
@@ -54,13 +58,31 @@
                 {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
+
+            services.AddCors(options =>
+            {
+                var corSettings = new
+                {
+                    Origins = new List<string>(),
+                    ExposedHeaders = new List<string>()
+                };
+                var sec = _configuration.GetSection("CorSettings");
+                sec.Bind(corSettings);
+                options.AddPolicy(sec["PolicyName"], config =>
+                {
+                    config.WithOrigins(corSettings.Origins.ToArray())
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithExposedHeaders(corSettings.ExposedHeaders.ToArray());
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
-
+            app.UseCors("");
             app.UseRouting();
 
             app.UseAuthentication();
