@@ -15,7 +15,7 @@
         Female
     }
 
-    public class LoverCloudUser : IdentityUser
+    public class LoverCloudUser : IdentityUser, IEquatable<LoverCloudUser>
     {
         public LoverCloudUser() : base()
         {
@@ -50,5 +50,10 @@
             return $"{UserName}, {DateTime.Now.Year - Birth.Year}岁, {(Sex == Sex.Male ? "男" : "女")}";
         }
 
+        public bool Equals([AllowNull] LoverCloudUser other)
+        {
+            if (other == null) return false;
+            return ReferenceEquals(other, this) || string.Equals(other.Id, Id);
+        }
     }
 }

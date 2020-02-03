@@ -91,5 +91,10 @@
         {
             await dbContext.Lovers.AddAsync(lover);
         }
+
+        public void AddLoverPhoto(LoverPhoto loverPhoto)
+        {
+            dbContext.LoverPhotos.Add(loverPhoto);
+        }
     }
 }

@@ -17,5 +17,6 @@
         Task AddLoverRequestAsync(LoverRequest loverRequest);
         Task<LoverRequest> GetLoverRequestByGuidAsync(string guid);
         Task AddLoverAsync(Lover lover);
+        void AddLoverPhoto(LoverPhoto loverPhoto);
     }
 }
