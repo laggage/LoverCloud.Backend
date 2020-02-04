@@ -8,7 +8,7 @@
         public string Guid { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Url { get; set; }
+        public string PhotoUrl { get; set; }
         public DateTime PhotoTakenDateTime { get; set; }
         public LoverAlbumResource Album { get; set; }
         public IList<TagResource> Tags { get; set; }

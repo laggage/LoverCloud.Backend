@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Resources;
@@ -43,12 +44,10 @@
 
         [HttpGet()]
         [Route("files/photos/{guid}", Name = "GetPhoto")]
-        public IActionResult GetLoverPhoto([FromRoute]string guid)
+        public async Task<IActionResult> GetLoverPhoto([FromRoute]string guid)
         {
-            return PhysicalFile(
-                Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "LoverCloudResources", "1.jpg"), "image/png");
+            var loverPhoto = await _loverRepository.FindLoverPhotoByGuid(guid);
+            return PhysicalFile(loverPhoto.PhotoPhysicalPath, $"image/png");
         }
 
         [HttpGet]
@@ -63,8 +62,8 @@
         /// </summary>
         /// <param name="formCollection">表单集合, 一个照片文件对应一个loverPhoto</param>
         /// <returns></returns>
-        [HttpPost(Name = "AddLoverPhoto")]
-        [Route("photos")]
+        [HttpPost()]
+        [Route("photos", Name = "AddLoverPhoto")]
         public async Task<IActionResult> AddLoverPhoto([FromForm]IFormCollection formCollection)
         {
             formCollection.TryGetValue("loverPhoto", out StringValues stringValues);
@@ -72,46 +71,35 @@
             
             var lover = await _loverRepository.GetLoverByLoverCloudUserIdAsync(GetLoverCloudUserId());
             var user = lover.LoverCloudUsers.FirstOrDefault(x => x.Id == GetLoverCloudUserId());
-            var loverPhotos = new List<LoverPhoto>();
             if (user == null) return Unauthorized();
-            for(int i = 0; i< stringValues.Count;i++)
-            {
-                var stringValue = stringValues[i];
+            var loverPhotos = new List<LoverPhoto>();
+            for (int i = 0; i< stringValues.Count;i++)
+            {   // 构造LoverPhoto, 并保存上传的图片文件
+                string stringValue = stringValues[i];
                 var formFile = formCollection.Files[i];
-                string fileSuffix = formFile.FileName.Split('.').LastOrDefault();
+                string fileSuffix = formFile.GetFileSuffix();
                 if (string.IsNullOrEmpty(fileSuffix)) return BadRequest("无法解析文件名");
 
-                var loverPhotoAddResource = JsonConvert.DeserializeObject<LoverPhotoAddResource>(stringValue);
+                LoverPhotoAddResource loverPhotoAddResource = JsonConvert.DeserializeObject<LoverPhotoAddResource>(stringValue);
                 var loverPhoto = _mapper.Map<LoverPhoto>(loverPhotoAddResource);
                 loverPhoto.Uploader = user;
                 loverPhoto.Lover = lover;
 
-                string directoryToSave = loverPhoto.GeneratePhotoSaveDirectory();
-                Directory.CreateDirectory(directoryToSave);
-                string photoPath = Path.Combine(directoryToSave, $"{loverPhoto.Guid}.{fileSuffix}");
+                string photoPath = loverPhoto.GeneratePhotoPhysicalPath(fileSuffix);
                 
                 loverPhoto.PhotoPhysicalPath = photoPath;
                 loverPhoto.PhotoUrl = Url.Link("GetPhoto", new { loverPhoto.Guid });
-
-                using var fs = new FileStream(photoPath, FileMode.OpenOrCreate);
-                await formFile.CopyToAsync(fs);
-                fs.Close();
+                
                 _loverRepository.AddLoverPhoto(loverPhoto);
                 loverPhotos.Add(loverPhoto);
+                await formFile.SaveToFileAsync(photoPath);
             }
 
             bool result = await _unitOfWork.SaveChangesAsync();
-            if (!result)
-            {
-                foreach (var loverPhoto in loverPhotos)
-                {
-                    if (System.IO.File.Exists(loverPhoto.PhotoPhysicalPath))
-                        System.IO.File.Delete(loverPhoto.PhotoPhysicalPath);
-                }
-                throw new InvalidDataException("保存数据到数据库失败");
-            }
-            return Ok(Request.Form.Files);
-            throw new NotImplementedException();
+            if(!result) loverPhotos.DeletePhysicalFiles();
+
+            var loverPhotoResource = _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos);
+            return CreatedAtRoute("AddLoverPhoto",null, loverPhotoResource);
         }
 
         #endregion

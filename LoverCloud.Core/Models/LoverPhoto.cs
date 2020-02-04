@@ -49,14 +49,25 @@
 
         public virtual LoverCloudUser Uploader { get; set; }
 
-        public string GeneratePhotoSaveDirectory()
+        /// <summary>
+        /// 生成照片文件路径
+        /// </summary>
+        /// <param name="fileSuffix">照片文件后缀名(比如: jpg, png, ...)</param>
+        /// <returns>照片文件完整的物理路径</returns>
+        public string GeneratePhotoPhysicalPath(string fileSuffix)
         {
             if (Uploader == null)
                 throw new InvalidOperationException("The property \"Uploader\" of the instance is null, cannot get the directory for the photo to save.");
             return Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "LoverCloudResources", "UserResources",
-                $"{Uploader.UserName}-{Uploader.Id}");
+                $"{Uploader.UserName}-{Uploader.Id}", $"{Guid}.{fileSuffix}");
+        }
+
+        public void DeletePhyicalFile()
+        {
+            if (File.Exists(PhotoPhysicalPath))
+                File.Delete(PhotoPhysicalPath);
         }
     }
 }

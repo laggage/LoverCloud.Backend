@@ -96,5 +96,10 @@
         {
             dbContext.LoverPhotos.Add(loverPhoto);
         }
+
+        public Task<LoverPhoto> FindLoverPhotoByGuid(string guid)
+        {
+            return dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.Guid == guid);
+        }
     }
 }
