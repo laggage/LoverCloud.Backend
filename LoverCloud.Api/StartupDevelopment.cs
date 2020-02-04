@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api
 {
     using AutoMapper;
+    using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
     using LoverCloud.Infrastructure.Extensions;
@@ -9,10 +10,12 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
+    using System.IO;
     using System.Reflection;
     using System.Text;
 
@@ -59,6 +62,32 @@
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "LoverCloudUser", 
+                    Version = "v1",
+                    Description = "LoverCloud api document powered by swagger.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Laggage",
+                        Email = "1634205628@qq.com",
+                        Url = new Uri("https://www.laggage.top:4201")
+                    }
+                });
+                // Set the comments path for the Swagger JSON and UI.
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath, true);
+                xmlFile = $"{typeof(IEntity).Assembly.GetName().Name}.xml";
+                xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath, true);
+                xmlFile = $"{typeof(LoverCloudDbContext).Assembly.GetName().Name}.xml";
+                xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath, true);
+            });
+
             services.AddCors(options =>
             {
                 var corSettings = new
@@ -81,6 +110,8 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoverCloud Api V1"); });
             app.UseDeveloperExceptionPage();
             app.UseCors(_configuration["CorSettings:PolicyName"]);
             app.UseRouting();
