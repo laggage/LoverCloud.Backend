@@ -46,7 +46,9 @@
         public IActionResult GetLoverPhoto([FromRoute]string guid)
         {
             return PhysicalFile(
-                Path.Combine(Directory.GetCurrentDirectory(), "1.jpg"), "image/png");
+                Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "LoverCloudResources", "1.jpg"), "image/png");
         }
 
         [HttpGet]
