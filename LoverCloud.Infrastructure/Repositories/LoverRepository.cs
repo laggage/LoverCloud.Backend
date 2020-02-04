@@ -11,16 +11,16 @@
 
     public class LoverRepository : ILoverRepository
     {
-        private readonly LoverCloudDbContext dbContext;
+        private readonly LoverCloudDbContext _dbContext;
 
         public LoverRepository(LoverCloudDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
         public void AddLoverLog(LoverLog loverLog)
         {
-            dbContext.LoverLogs.Add(loverLog);
+            _dbContext.LoverLogs.Add(loverLog);
         }
 
         public Task AddLoverLogAsync(LoverLog loverLog)
@@ -31,7 +31,7 @@
         public List<LoverLog> GetLoverLogsByLoverGuid(string loverGuid)
         {
             if (string.IsNullOrEmpty(loverGuid)) throw new ArgumentNullException(nameof(loverGuid));
-            return dbContext.LoverLogs.Where(x => x.LoverGuid == loverGuid).ToList();
+            return _dbContext.LoverLogs.Where(x => x.LoverGuid == loverGuid).ToList();
         }
 
         public Task<List<LoverLog>> GetLoverLogsByLoverGuidAsync(string loverGuid)
@@ -42,7 +42,7 @@
         public List<LoverLog> GetLoverLogsByLoverCloudUserId(string loverCloudUserGuid)
         {
             if (string.IsNullOrEmpty(loverCloudUserGuid)) throw new ArgumentNullException(nameof(loverCloudUserGuid));
-            string loverGuid = dbContext.Users.Include(x => x.Lover)
+            string loverGuid = _dbContext.Users.Include(x => x.Lover)
                 .FirstOrDefault(x => x.Id == loverCloudUserGuid).Lover?.Guid;
             if (string.IsNullOrEmpty(loverGuid)) throw new Exception($"用户Id为{loverCloudUserGuid}的用户, 还没有对应的情侣");
             return GetLoverLogsByLoverGuid(loverGuid);
@@ -55,7 +55,7 @@
 
         public Lover GetLoverByLoverCloudUserId(string loverCloudUserId)
         {
-            return dbContext.Users.Include(x => x.Lover)
+            return _dbContext.Users.Include(x => x.Lover)
                 .FirstOrDefault(x => x.Id == loverCloudUserId).Lover;
         }
 
@@ -66,7 +66,7 @@
 
         public void AddLoverRequest(LoverRequest loverRequest)
         {
-            dbContext.LoverRequests.Add(loverRequest);
+            _dbContext.LoverRequests.Add(loverRequest);
         }
 
         public Task AddLoverRequestAsync(LoverRequest loverRequest)
@@ -76,7 +76,7 @@
 
         public LoverRequest GetLoverRequestByGuid(string guid)
         {
-            return dbContext.LoverRequests
+            return _dbContext.LoverRequests
                 .Include(x => x.Receiver).ThenInclude(x => x.Lover)
                 .Include(x => x.Requester).ThenInclude(x => x.Lover)
                 .FirstOrDefault(x => x.Guid == guid);
@@ -89,17 +89,37 @@
 
         public async Task AddLoverAsync(Lover lover)
         {
-            await dbContext.Lovers.AddAsync(lover);
+            await _dbContext.Lovers.AddAsync(lover);
         }
 
         public void AddLoverPhoto(LoverPhoto loverPhoto)
         {
-            dbContext.LoverPhotos.Add(loverPhoto);
+            _dbContext.LoverPhotos.Add(loverPhoto);
         }
 
         public Task<LoverPhoto> FindLoverPhotoByGuid(string guid)
         {
-            return dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.Guid == guid);
+            return _dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.Guid == guid);
+        }
+
+        public async Task<PaginatedList<LoverPhoto>> GetLoverPhotosAsync(string userId, LoverPhotoParameters parameters)
+        {
+            if (string.IsNullOrEmpty(userId) ||
+                parameters == null)
+                throw new ArgumentNullException();
+
+            var loverPhotos = _dbContext.LoverPhotos.Where(
+                    x => x.Lover.LoverCloudUsers.Any(y => y.Id == userId));
+            if (!string.IsNullOrEmpty(parameters.Name))
+                loverPhotos = loverPhotos.Where(x => x.Name.Equals(parameters.Name));
+            var loverPhotoList = await loverPhotos
+                .Skip(parameters.PageSize * (parameters.PageIndex - 1))
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            return new PaginatedList<LoverPhoto>(
+                parameters.PageIndex, parameters.PageSize,
+                await loverPhotos.CountAsync(), loverPhotoList);
         }
     }
 }

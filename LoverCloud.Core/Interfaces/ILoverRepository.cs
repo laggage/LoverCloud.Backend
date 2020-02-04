@@ -19,5 +19,6 @@
         Task AddLoverAsync(Lover lover);
         void AddLoverPhoto(LoverPhoto loverPhoto);
         Task<LoverPhoto> FindLoverPhotoByGuid(string guid);
+        Task<PaginatedList<LoverPhoto>> GetLoverPhotosAsync(string userId, LoverPhotoParameters parameters);
     }
 }

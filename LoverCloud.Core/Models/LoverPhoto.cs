@@ -26,9 +26,9 @@
         /// </summary>
         public string Description { get; set; }
         /// <summary>
-        /// 照片标题
+        /// 照片名
         /// </summary>
-        public string Title { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// 照片资源路径
         /// </summary>
@@ -64,6 +64,9 @@
                 $"{Uploader.UserName}-{Uploader.Id}", $"{Guid}.{fileSuffix}");
         }
 
+        /// <summary>
+        /// 根据 <see cref="PhotoPhysicalPath"/> 删除物理磁盘上的图片文件
+        /// </summary>
         public void DeletePhyicalFile()
         {
             if (File.Exists(PhotoPhysicalPath))

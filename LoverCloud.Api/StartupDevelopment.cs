@@ -12,6 +12,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
@@ -59,6 +60,7 @@
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 

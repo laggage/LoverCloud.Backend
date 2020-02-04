@@ -6,12 +6,13 @@
     public class LoverPhotoResource
     {
         public string Guid { get; set; }
-        public string Title { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public string PhotoUrl { get; set; }
-        public DateTime PhotoTakenDateTime { get; set; }
+        public DateTime PhotoTakenDate { get; set; }
         public LoverAlbumResource Album { get; set; }
         public IList<TagResource> Tags { get; set; }
+        public object ToDynamicObjec { get; set; }
     }
 
     public class LoverPhotoAddResource

@@ -4,6 +4,7 @@
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
+    using LoverCloud.Infrastructure.Extensions;
     using LoverCloud.Infrastructure.Resources;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -41,6 +43,11 @@
 
         #region Api-LoverPhotos&&LoverAlbums
 
+        /// <summary>
+        /// 获取情侣照片
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>图片文件</returns>
         [HttpGet()]
         [Route("files/photos/{guid}", Name = "GetPhoto")]
         public async Task<IActionResult> GetLoverPhoto([FromRoute]string guid)
@@ -49,11 +56,58 @@
             return PhysicalFile(loverPhoto.PhotoPhysicalPath, $"image/png");
         }
 
+        /// <summary>
+        /// 获取情侣照片列表(支持翻页, 根据照片名搜索, 排序)
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [Route("photos")]
-        public IActionResult GetLoverPhotoResources()
+        [Route("photos", Name = "GetLoverPhotoResources")]
+        public async Task<IActionResult> GetLoverPhotoResources([FromQuery]LoverPhotoParameters parameters)
         {
-            throw new NotImplementedException();
+            PaginatedList<LoverPhoto> loverPhotos = 
+                await _loverRepository.GetLoverPhotosAsync(GetLoverCloudUserId(), parameters);
+            IEnumerable<LoverPhotoResource> loverPhotoResources = 
+                _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos);
+            IEnumerable<ExpandoObject> shapedLoverPhotoResources = 
+                loverPhotoResources.ToDynamicObject(parameters.Fields);
+            var result = new
+            {
+                value = shapedLoverPhotoResources,
+                links = CreateLinksForLoverPhotos(
+                    parameters, loverPhotos.HasPrevious, loverPhotos.HasNext)
+            };
+
+            return Ok(result);
+        }
+
+        private IEnumerable<LinkResource> CreateLinksForLoverPhotos(
+            QueryParameters parameters, bool hasPreviouss, bool hasNext)
+        {
+            string routeName = "GetLoverPhotoResources";
+            var newParameters = new LoverPhotoParameters { PageIndex = parameters.PageIndex, PageSize = parameters.PageSize };
+
+            var linkResources = new List<LinkResource>
+            {
+                new LinkResource(
+                    "self", "get", Url.Link(routeName, newParameters)),
+            };
+            if (hasPreviouss)
+            {
+                newParameters.PageIndex -= 1;
+                linkResources.Add(
+                    new LinkResource(
+                        "previous_page", "get", Url.Link(routeName, newParameters)));
+            }
+
+            if (hasNext)
+            {
+                newParameters.PageIndex += 1;
+                linkResources.Add(
+                    new LinkResource(
+                        "next_page", "get", Url.Link(routeName, newParameters)));
+            }
+            
+            return linkResources;
         }
 
         /// <summary>
@@ -222,6 +276,5 @@
         /// <returns> 经过身份认证的用户的Id </returns>
         private string GetLoverCloudUserId() =>
             User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier, StringComparison.OrdinalIgnoreCase))?.Value;
-
     }
 }
