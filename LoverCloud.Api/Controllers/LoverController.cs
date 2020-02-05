@@ -6,13 +6,16 @@
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Extensions;
     using LoverCloud.Infrastructure.Resources;
+    using LoverCloud.Infrastructure.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Primitives;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
@@ -29,16 +32,19 @@
         private readonly ILoverRepository _loverRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPropertyMappingContainer _propertyMappingContainer;
 
         public LoverController(UserManager<LoverCloudUser> userManager,
             ILoverRepository loverRepository,
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            IPropertyMappingContainer propertyMappingContainer)
         {
             _userManager = userManager;
             _loverRepository = loverRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _propertyMappingContainer = propertyMappingContainer;
         }
 
         #region Api-LoverPhotos&&LoverAlbums
@@ -66,10 +72,18 @@
         {
             PaginatedList<LoverPhoto> loverPhotos = 
                 await _loverRepository.GetLoverPhotosAsync(GetLoverCloudUserId(), parameters);
+            var propertyMapping = _propertyMappingContainer.Resolve<LoverPhotoResource, LoverPhoto>();
             IEnumerable<LoverPhotoResource> loverPhotoResources = 
-                _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos);
+                _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos)
+                    .AsQueryable().ApplySort(parameters.OrderBy, propertyMapping);
             IEnumerable<ExpandoObject> shapedLoverPhotoResources = 
                 loverPhotoResources.ToDynamicObject(parameters.Fields);
+            var metadata = new
+            {
+                PageIndex = loverPhotos.PageIndex,
+                PageSize = loverPhotos.PageSize,
+                PageCount = loverPhotos.PageCount
+            };
             var result = new
             {
                 value = shapedLoverPhotoResources,
@@ -77,6 +91,12 @@
                     parameters, loverPhotos.HasPrevious, loverPhotos.HasNext)
             };
 
+            Response.Headers.Add(
+                LoverCloudApiConstraint.PaginationHeaderKey,
+                JsonConvert.SerializeObject(metadata, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }));
             return Ok(result);
         }
 

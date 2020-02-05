@@ -10,19 +10,29 @@
         public static ExpandoObject ToDynamicObject(this object source, string fields = null)
         {
             var propertyInfoList = new List<PropertyInfo>();
-            string[] splitFields = fields.Split(',');
-
             Type type = source.GetType();
-            var dynamicObj = new ExpandoObject();
-            PropertyInfo property = null;
-            foreach (var field in splitFields)
+            if (string.IsNullOrEmpty(fields))
             {
-                string trimmedField = field.Trim();
-                property = type.GetProperty(
-                    trimmedField, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
-                if (property == null) continue;
-                dynamicObj.TryAdd(property.Name, property.GetValue(source));
+                propertyInfoList.AddRange(
+                    type.GetProperties(
+                        BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public));
             }
+            else
+            {
+                string[] splitFields = fields.Split(',');
+                foreach (var field in splitFields)
+                {
+                    string trimmedField = field.Trim();
+                    PropertyInfo property = type.GetProperty(
+                        trimmedField, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+                    if (property == null) continue;
+                    propertyInfoList.Add(property);
+                }
+            }
+            
+            var dynamicObj = new ExpandoObject();
+            foreach (var propertyInfo in propertyInfoList)
+                dynamicObj.TryAdd(propertyInfo.Name, propertyInfo.GetValue(source));
             
             return dynamicObj;
         }

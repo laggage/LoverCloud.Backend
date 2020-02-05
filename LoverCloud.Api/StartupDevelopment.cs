@@ -5,20 +5,23 @@
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
     using LoverCloud.Infrastructure.Extensions;
+    using LoverCloud.Infrastructure.Resources;
+    using LoverCloud.Infrastructure.Services;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Cors.Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
+    using Swashbuckle.AspNetCore.Filters;
+    using Swashbuckle.AspNetCore.SwaggerGen;
     using System;
     using System.Collections.Generic;
-    using System.Dynamic;
     using System.IO;
     using System.Reflection;
-    using System.Text;
 
     public class StartupDevelopment
     {
@@ -64,50 +67,15 @@
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "LoverCloudUser", 
-                    Version = "v1",
-                    Description = "LoverCloud api document powered by swagger.",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Laggage",
-                        Email = "1634205628@qq.com",
-                        Url = new Uri("https://www.laggage.top:4201")
-                    }
-                });
-                // Set the comments path for the Swagger JSON and UI.
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath, true);
-                xmlFile = $"{typeof(IEntity).Assembly.GetName().Name}.xml";
-                xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath, true);
-                xmlFile = $"{typeof(LoverCloudDbContext).Assembly.GetName().Name}.xml";
-                xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath, true);
-            });
+            services.AddCors(options => ConfigCors(options));
 
-            services.AddCors(options =>
-            {
-                var corSettings = new
-                {
-                    Origins = new List<string>(),
-                    ExposedHeaders = new List<string>()
-                };
-                var sec = _configuration.GetSection("CorSettings");
-                sec.Bind(corSettings);
-                options.AddPolicy(sec["PolicyName"], config =>
-                {
-                    config.WithOrigins(corSettings.Origins.ToArray())
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .WithExposedHeaders(corSettings.ExposedHeaders.ToArray());
-                });
-            });
+            var propetyMappingContainer = new PropertyMappingContainer();
+            propetyMappingContainer.Register<LoverPhotoResourceMapping>();
+            services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
+
+            services.AddSwaggerGen(options => ConfigSwagger(options));
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
@@ -124,6 +92,63 @@
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void ConfigSwagger(SwaggerGenOptions options)
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "LoverCloudUser",
+                Version = "v1",
+                Description = "LoverCloud api document powered by swagger.",
+                Contact = new OpenApiContact
+                {
+                    Name = "Laggage",
+                    Email = "1634205628@qq.com",
+                    Url = new Uri("https://www.laggage.top:4201")
+                }
+            });
+            // Set the comments path for the Swagger JSON and UI.
+            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath, true);
+            xmlFile = $"{typeof(IEntity).Assembly.GetName().Name}.xml";
+            xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath, true);
+            xmlFile = $"{typeof(LoverCloudDbContext).Assembly.GetName().Name}.xml";
+            xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath, true);
+
+            options.OperationFilter<AddResponseHeadersFilter>();
+            options.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+
+            options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Description = "Jwt授权",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey
+            });
+        }
+
+        private void ConfigCors(CorsOptions options)
+        {
+            var corSettings = new
+            {
+                Origins = new List<string>(),
+                ExposedHeaders = new List<string>()
+            };
+            var sec = _configuration.GetSection("CorSettings");
+            sec.Bind(corSettings);
+            options.AddPolicy(sec["PolicyName"], config =>
+            {
+                config.WithOrigins(corSettings.Origins.ToArray())
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders(corSettings.ExposedHeaders.ToArray());
             });
         }
     }
