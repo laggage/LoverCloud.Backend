@@ -9,12 +9,12 @@
         public bool Equals([AllowNull] IEntity x, [AllowNull] IEntity y)
         {
             if (x == null || y == null) return false;
-            return string.Equals(x.Guid, y.Guid);
+            return string.Equals(x.Id, y.Id);
         }
 
         public int GetHashCode([DisallowNull] IEntity obj)
         {
-            return obj.Guid.GetHashCode();
+            return obj.Id.GetHashCode();
         }
 
         public static EntityComparer Default => new EntityComparer();

@@ -8,8 +8,8 @@
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(Tag));
             builder.HasOne(o => o.LoverAlbum)
                 .WithMany(o => o.Tags)

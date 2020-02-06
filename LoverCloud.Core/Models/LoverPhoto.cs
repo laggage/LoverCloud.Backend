@@ -1,5 +1,6 @@
 ﻿namespace LoverCloud.Core.Models
 {
+    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Interfaces;
     using System;
     using System.Collections.Generic;
@@ -9,10 +10,10 @@
     {
         public LoverPhoto()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
         }
 
-        public string Guid { get; set; }
+        public string Id { get; set; }
         /// <summary>
         /// 照片上传日期
         /// </summary>
@@ -60,8 +61,8 @@
                 throw new InvalidOperationException("The property \"Uploader\" of the instance is null, cannot get the directory for the photo to save.");
             return Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "LoverCloudResources", "UserResources",
-                $"{Uploader.UserName}-{Uploader.Id}", $"{Guid}.{fileSuffix}");
+                LoverCloudApiConstraint.ResourcesDirectoryName, 
+                Uploader.UserPhysicalDirectory, $"{Id}.{fileSuffix}");
         }
 
         /// <summary>

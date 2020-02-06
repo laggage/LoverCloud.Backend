@@ -10,10 +10,10 @@
     {
         public Tag()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
         }
 
-        public string Guid { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
 

@@ -16,7 +16,7 @@
         /// <param name="source"></param>
         /// <param name="orderBy">指定排序字段, 例如 name desc, age, ...</param>
         /// <param name="propertyMapping"></param>
-        public static IEnumerable<T> ApplySort<T>(
+        public static IQueryable<T> ApplySort<T>(
             this IQueryable<T> source, in string orderBy, in IPropertyMapping propertyMapping)
         {
             if (source == null) throw new ArgumentNullException();

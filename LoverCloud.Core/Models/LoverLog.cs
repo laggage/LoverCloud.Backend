@@ -8,10 +8,10 @@
     {
         public LoverLog()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
         }
 
-        public string Guid { get; set; }
+        public string Id { get; set; }
         public string Content { get; set; }
         /// <summary>
         /// 情侣日志发表时间

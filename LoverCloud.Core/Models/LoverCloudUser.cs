@@ -4,7 +4,10 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Linq;
+    using LoverCloud.Core.Extensions;
+    using LoverCloud.Core.Interfaces;
     using Microsoft.AspNetCore.Identity;
 
     public enum Sex
@@ -15,8 +18,9 @@
         Female
     }
 
-    public class LoverCloudUser : IdentityUser, IEquatable<LoverCloudUser>
+    public class LoverCloudUser : IdentityUser, IEquatable<LoverCloudUser>, IEntity
     {
+
         public LoverCloudUser() : base()
         {
         }
@@ -32,12 +36,19 @@
         /// <summary>
         /// 表示用户头像
         /// </summary>
-        public string ProfileImage { get; set; }
+        public string ProfileImagePhysicalPath { get; set; }
+        public string GenerateProfileImagePhysicalPath(string suffix) =>
+            Path.Combine(
+                Directory.GetCurrentDirectory(),
+                LoverCloudApiConstraint.ResourcesDirectoryName, UserPhysicalDirectory,"ProfileImage", 
+                $"{UserName}.{suffix}");
 
         public virtual Lover Lover { get; set; }
         public virtual IList<LoverRequest> LoverRequests { get; set; }
         public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
         public virtual IList<MenstruationLog> MenstruationLogs { get; set; }
+
+        public string UserPhysicalDirectory => Path.Combine("UserResources", $"{UserName}-{Id}");
 
         public LoverCloudUser GetSpouse()
         {

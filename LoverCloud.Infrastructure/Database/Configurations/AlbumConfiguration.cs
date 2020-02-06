@@ -8,8 +8,8 @@
     {
         public void Configure(EntityTypeBuilder<LoverAlbum> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverAlbum));
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverAlbums)
@@ -21,8 +21,8 @@
     {
         public void Configure(EntityTypeBuilder<LoverPhoto> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverPhoto));
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverPhotos);

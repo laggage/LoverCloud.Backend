@@ -2,7 +2,7 @@
 {
     public class LoverRequestResource
     {
-        public string Guid { get; set; }
+        public string Id { get; set; }
         public LoverCloudUserResource Requester { get; set; }
         public LoverCloudUserResource Receiver { get; set; }
         public bool? Succeed { get; set; }
@@ -10,7 +10,7 @@
 
     public class LoverRequestAddResource
     {
-        public string ReceiverGuid { get; set; }
+        public string ReceiverId { get; set; }
     }
 
     public class LoverRequestUpdateResource

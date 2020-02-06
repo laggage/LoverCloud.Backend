@@ -8,22 +8,22 @@
     {
         public void Configure(EntityTypeBuilder<LoverRequest> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverRequest));
             builder.HasOne(x => x.Requester)
                 .WithMany(x => x.LoverRequests)
-                .HasForeignKey(x => x.RequesterGuid)
+                .HasForeignKey(x => x.RequesterId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Receiver)
                 .WithMany(x => x.ReceivedLoverRequests)
-                .HasForeignKey(x => x.ReceiverGuid)
+                .HasForeignKey(x => x.ReceiverId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.Lover)
                 .WithOne(o => o.LoverRequest)
-                .HasForeignKey<LoverRequest>(x => x.LoverGuid)
+                .HasForeignKey<LoverRequest>(x => x.LoverId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

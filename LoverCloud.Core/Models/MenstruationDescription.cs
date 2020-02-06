@@ -10,9 +10,9 @@
     {
         public MenstruationDescription()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
         }
-        public string Guid { get; set; }
+        public string Id { get; set; }
         /// <summary>
         /// 姨妈期间的某一天
         /// </summary>

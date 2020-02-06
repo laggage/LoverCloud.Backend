@@ -1,24 +1,10 @@
 ﻿namespace LoverCloud.Core.Interfaces
 {
     using LoverCloud.Core.Models;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface ILoverRepository
+    public interface ILoverRepository : IRepository<Lover>
     {
-        void AddLoverLog(LoverLog loverLog);
-        Task AddLoverLogAsync(LoverLog loverLog);
-        List<LoverLog> GetLoverLogsByLoverGuid(string loverGuid);
-        Task<List<LoverLog>> GetLoverLogsByLoverGuidAsync(string loverGuid);
-        List<LoverLog> GetLoverLogsByLoverCloudUserId(string loverCloudUserGuid);
-        Task<List<LoverLog>> GetLoverLogsByLoverCloudUserIdAsync(string loverCloudUserGuid);
-        Lover GetLoverByLoverCloudUserId(string loverCloudUserId);
-        Task<Lover> GetLoverByLoverCloudUserIdAsync(string loverCloudUserId);
-        Task AddLoverRequestAsync(LoverRequest loverRequest);
-        Task<LoverRequest> GetLoverRequestByGuidAsync(string guid);
-        Task AddLoverAsync(Lover lover);
-        void AddLoverPhoto(LoverPhoto loverPhoto);
-        Task<LoverPhoto> FindLoverPhotoByGuid(string guid);
-        Task<PaginatedList<LoverPhoto>> GetLoverPhotosAsync(string userId, LoverPhotoParameters parameters);
+        Task<Lover> FindByUserIdAsync(string userId);
     }
 }

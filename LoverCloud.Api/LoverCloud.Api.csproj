@@ -25,4 +25,8 @@
     <ProjectReference Include="..\LoverCloud.Infrastructure\LoverCloud.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LoverCloudResources\" />
+  </ItemGroup>
+
 </Project>

@@ -26,6 +26,10 @@
             CreateMap<MenstruationDescription, MenstruationDescriptionResource>();
             CreateMap<MenstruationLog, MenstruationLogResource>();
 
+
+            CreateMap<LoverCloudUserUpdateResource, LoverCloudUser>()
+                .ReverseMap();
+
             CreateMap<LoverCloudUser, LoverCloudUserResource>()
                 .ForMember(x => x.Guid, c => c.MapFrom(s => s.Id))
                 .ForMember(x => x.Sex, c => c.MapFrom(y => y.Sex.GetDescription()))

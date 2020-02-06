@@ -11,7 +11,7 @@
     {
         public Lover()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
             LoverAnniversaries = new List<LoverAnniversary>();
             LoverAlbums = new List<LoverAlbum>();
             LoverPhotos = new List<LoverPhoto>();
@@ -19,7 +19,7 @@
             LoverCloudUsers = new List<LoverCloudUser>();
         }
 
-        public string Guid { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 注册时间
@@ -67,10 +67,10 @@
     {
         public LoverAnniversary()
         {
-            Guid = System.Guid.NewGuid().ToString();
+            Id = System.Guid.NewGuid().ToString();
         }
 
-        public string Guid { get; set; }
+        public string Id { get; set; }
         public virtual Lover Lover { get; set; }
         /// <summary>
         /// 纪念日名称

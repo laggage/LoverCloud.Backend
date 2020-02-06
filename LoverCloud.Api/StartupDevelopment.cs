@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Cors.Infrastructure;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -61,11 +62,7 @@
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddControllers()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                });
+                .AddNewtonsoftJson(options => ConfigNewtonsoftJson(options));
 
             services.AddCors(options => ConfigCors(options));
 
@@ -93,6 +90,12 @@
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void ConfigNewtonsoftJson(MvcNewtonsoftJsonOptions options)
+        {
+            options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
 
         private void ConfigSwagger(SwaggerGenOptions options)

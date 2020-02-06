@@ -19,7 +19,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.Lover", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<bool>("IsBoyFirstLove")
@@ -31,14 +31,14 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<DateTime>("RegisterDate")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
                     b.ToTable("Lover");
                 });
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverAlbum", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("CreateDate")
@@ -56,7 +56,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
                     b.HasIndex("LoverGuid");
 
@@ -65,7 +65,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverAnniversary", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("Date")
@@ -75,16 +75,16 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(512) CHARACTER SET utf8mb4")
                         .HasMaxLength(512);
 
-                    b.Property<string>("LoverGuid")
+                    b.Property<string>("LoverId")
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
                         .HasMaxLength(50);
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
-                    b.HasIndex("LoverGuid");
+                    b.HasIndex("LoverId");
 
                     b.ToTable("LoverAnniversary");
                 });
@@ -117,7 +117,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("LoverGuid")
+                    b.Property<string>("LoverId")
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("NormalizedEmail")
@@ -137,7 +137,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("ProfileImage")
+                    b.Property<string>("ProfileImagePhysicalPath")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("RegisterDate")
@@ -159,7 +159,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoverGuid");
+                    b.HasIndex("LoverId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -173,7 +173,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverLog", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("Content")
@@ -187,18 +187,21 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverGuid")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("LoverId")
                         .HasColumnType("varchar(36)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
-                    b.HasIndex("LoverGuid");
+                    b.HasIndex("LoverId");
 
                     b.ToTable("LoverLog");
                 });
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverPhoto", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("AlbumGuid")
@@ -207,10 +210,10 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("LoverGuid")
+                    b.Property<string>("LoverId")
                         .HasColumnType("varchar(36)");
 
-                    b.Property<string>("LoverLogGuid")
+                    b.Property<string>("LoverLogId")
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("Name")
@@ -231,13 +234,13 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<string>("UploaderId")
                         .HasColumnType("varchar(36)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
                     b.HasIndex("AlbumGuid");
 
-                    b.HasIndex("LoverGuid");
+                    b.HasIndex("LoverId");
 
-                    b.HasIndex("LoverLogGuid");
+                    b.HasIndex("LoverLogId");
 
                     b.HasIndex("UploaderId");
 
@@ -246,39 +249,39 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverRequest", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
-                    b.Property<string>("LoverGuid")
+                    b.Property<string>("LoverId")
                         .HasColumnType("varchar(36)");
 
-                    b.Property<string>("ReceiverGuid")
+                    b.Property<string>("ReceiverId")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("RequesterGuid")
+                    b.Property<string>("RequesterId")
                         .HasColumnType("varchar(36)");
 
                     b.Property<bool?>("Succeed")
                         .HasColumnType("tinyint(1)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
-                    b.HasIndex("LoverGuid")
+                    b.HasIndex("LoverId")
                         .IsUnique();
 
-                    b.HasIndex("ReceiverGuid");
+                    b.HasIndex("ReceiverId");
 
-                    b.HasIndex("RequesterGuid");
+                    b.HasIndex("RequesterId");
 
                     b.ToTable("LoverRequest");
                 });
 
             modelBuilder.Entity("LoverCloud.Core.Models.MenstruationDescription", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("Date")
@@ -288,19 +291,19 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(512) CHARACTER SET utf8mb4")
                         .HasMaxLength(512);
 
-                    b.Property<string>("MenstruationLogGuid")
+                    b.Property<string>("MenstruationLogId")
                         .HasColumnType("varchar(36)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
-                    b.HasIndex("MenstruationLogGuid");
+                    b.HasIndex("MenstruationLogId");
 
                     b.ToTable("MenstruationDescription");
                 });
 
             modelBuilder.Entity("LoverCloud.Core.Models.MenstruationLog", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("EndDate")
@@ -312,7 +315,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
                     b.HasIndex("LoverCloudUserId");
 
@@ -321,7 +324,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.Tag", b =>
                 {
-                    b.Property<string>("Guid")
+                    b.Property<string>("Id")
                         .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("CreateDate")
@@ -337,7 +340,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
-                    b.HasKey("Guid");
+                    b.HasKey("Id");
 
                     b.HasIndex("LoverAlbumGuid");
 
@@ -485,7 +488,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverAnniversaries")
-                        .HasForeignKey("LoverGuid")
+                        .HasForeignKey("LoverId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -493,7 +496,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverCloudUsers")
-                        .HasForeignKey("LoverGuid")
+                        .HasForeignKey("LoverId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -501,7 +504,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverLogs")
-                        .HasForeignKey("LoverGuid")
+                        .HasForeignKey("LoverId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -513,11 +516,11 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverPhotos")
-                        .HasForeignKey("LoverGuid");
+                        .HasForeignKey("LoverId");
 
                     b.HasOne("LoverCloud.Core.Models.LoverLog", "LoverLog")
                         .WithMany("LoverPhotos")
-                        .HasForeignKey("LoverLogGuid");
+                        .HasForeignKey("LoverLogId");
 
                     b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Uploader")
                         .WithMany()
@@ -528,17 +531,17 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithOne("LoverRequest")
-                        .HasForeignKey("LoverCloud.Core.Models.LoverRequest", "LoverGuid")
+                        .HasForeignKey("LoverCloud.Core.Models.LoverRequest", "LoverId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Receiver")
                         .WithMany("ReceivedLoverRequests")
-                        .HasForeignKey("ReceiverGuid")
+                        .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Requester")
                         .WithMany("LoverRequests")
-                        .HasForeignKey("RequesterGuid")
+                        .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -546,7 +549,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     b.HasOne("LoverCloud.Core.Models.MenstruationLog", "MenstruationLog")
                         .WithMany("MenstruationDescriptions")
-                        .HasForeignKey("MenstruationLogGuid")
+                        .HasForeignKey("MenstruationLogId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

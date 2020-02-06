@@ -8,8 +8,8 @@
     {
         public void Configure(EntityTypeBuilder<Lover> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(Lover));
         }
     }
@@ -18,8 +18,8 @@
     {
         public void Configure(EntityTypeBuilder<LoverLog> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverLog));
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverLogs)
@@ -32,8 +32,8 @@
     {
         public void Configure(EntityTypeBuilder<LoverAnniversary> builder)
         {
-            builder.HasKey(x => x.Guid);
-            builder.Property(x => x.Guid).HasColumnType("varchar(36)");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(LoverAnniversary));
             builder.Property(x => x.Name).HasMaxLength(50);
             builder.Property(x => x.Description).HasMaxLength(512);

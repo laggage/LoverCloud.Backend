@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 {
-    public partial class InitLoverCloudDb : Migration
+    public partial class InitLoverCloudDbContext : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,6 +20,84 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lover",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    RegisterDate = table.Column<DateTime>(nullable: false),
+                    IsBoyFirstLove = table.Column<bool>(nullable: false),
+                    IsGirlFirstLove = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lover", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(nullable: false),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoverAlbum",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    CreateDate = table.Column<DateTime>(nullable: false),
+                    LastUpdate = table.Column<DateTime>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    LoverGuid = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoverAlbum", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LoverAlbum_Lover_LoverGuid",
+                        column: x => x.LoverGuid,
+                        principalTable: "Lover",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoverAnniversary",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    LoverId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 50, nullable: true),
+                    Date = table.Column<DateTime>(type: "date", nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoverAnniversary", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LoverAnniversary_Lover_LoverId",
+                        column: x => x.LoverId,
+                        principalTable: "Lover",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,33 +121,41 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Birth = table.Column<DateTime>(type: "date", nullable: false),
                     RegisterDate = table.Column<DateTime>(nullable: false),
-                    Sex = table.Column<int>(nullable: false),
-                    ProfileImage = table.Column<string>(nullable: true)
+                    Sex = table.Column<string>(nullable: false),
+                    ProfileImage = table.Column<string>(nullable: true),
+                    LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LoverCloudUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LoverCloudUser_Lover_LoverId",
+                        column: x => x.LoverId,
+                        principalTable: "Lover",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
+                name: "LoverLog",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(nullable: false),
-                    ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Content = table.Column<string>(maxLength: 1024, nullable: true),
+                    CreateDateTime = table.Column<DateTime>(nullable: false),
+                    LastUpdateTime = table.Column<DateTime>(nullable: false),
+                    LoverGuid = table.Column<string>(nullable: true),
+                    LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.PrimaryKey("PK_LoverLog", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        name: "FK_LoverLog_Lover_LoverId",
+                        column: x => x.LoverId,
+                        principalTable: "Lover",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,45 +244,51 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lover",
+                name: "LoverRequest",
                 columns: table => new
                 {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    MaleGuid = table.Column<string>(nullable: true),
-                    FemaleGuid = table.Column<string>(nullable: true),
-                    RegisterDate = table.Column<DateTime>(nullable: false),
-                    IsBoyFirstLove = table.Column<bool>(nullable: false),
-                    IsGirlFirstLove = table.Column<bool>(nullable: false)
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    RequesterId = table.Column<string>(nullable: true),
+                    ReceiverId = table.Column<string>(nullable: true),
+                    RequestDate = table.Column<DateTime>(nullable: false),
+                    Succeed = table.Column<bool>(nullable: true),
+                    LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lover", x => x.Guid);
+                    table.PrimaryKey("PK_LoverRequest", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Lover_LoverCloudUser_FemaleGuid",
-                        column: x => x.FemaleGuid,
+                        name: "FK_LoverRequest_Lover_LoverId",
+                        column: x => x.LoverId,
+                        principalTable: "Lover",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LoverRequest_LoverCloudUser_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalTable: "LoverCloudUser",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Lover_LoverCloudUser_MaleGuid",
-                        column: x => x.MaleGuid,
+                        name: "FK_LoverRequest_LoverCloudUser_RequesterId",
+                        column: x => x.RequesterId,
                         principalTable: "LoverCloudUser",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "MenstruationLog",
                 columns: table => new
                 {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: false),
                     LoverCloudUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenstruationLog", x => x.Guid);
+                    table.PrimaryKey("PK_MenstruationLog", x => x.Id);
                     table.ForeignKey(
                         name: "FK_MenstruationLog_LoverCloudUser_LoverCloudUserId",
                         column: x => x.LoverCloudUserId,
@@ -206,157 +298,67 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoverAlbum",
+                name: "LoverPhoto",
                 columns: table => new
                 {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    CreateDate = table.Column<DateTime>(nullable: false),
-                    LastUpdate = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    UpdateDate = table.Column<DateTime>(nullable: false),
+                    PhotoTakenDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    LoverGuid = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    PhotoUrl = table.Column<string>(nullable: true),
+                    PhotoPhysicalPath = table.Column<string>(nullable: true),
+                    AlbumGuid = table.Column<string>(nullable: true),
+                    LoverId = table.Column<string>(nullable: true),
+                    LoverLogId = table.Column<string>(nullable: true),
+                    UploaderId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LoverAlbum", x => x.Guid);
+                    table.PrimaryKey("PK_LoverPhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoverAlbum_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
-                        principalTable: "Lover",
-                        principalColumn: "Guid",
+                        name: "FK_LoverPhoto_LoverAlbum_AlbumGuid",
+                        column: x => x.AlbumGuid,
+                        principalTable: "LoverAlbum",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LoverAnniversary",
-                columns: table => new
-                {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    LoverGuid = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(maxLength: 50, nullable: true),
-                    Date = table.Column<DateTime>(type: "date", nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoverAnniversary", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_LoverAnniversary_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
+                        name: "FK_LoverPhoto_Lover_LoverId",
+                        column: x => x.LoverId,
                         principalTable: "Lover",
-                        principalColumn: "Guid",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LoverLog",
-                columns: table => new
-                {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    Content = table.Column<string>(maxLength: 1024, nullable: true),
-                    CreateDateTime = table.Column<DateTime>(nullable: false),
-                    LastUpdateTime = table.Column<DateTime>(nullable: false),
-                    LoverGuid = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoverLog", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_LoverLog_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
-                        principalTable: "Lover",
-                        principalColumn: "Guid",
+                        name: "FK_LoverPhoto_LoverLog_LoverLogId",
+                        column: x => x.LoverLogId,
+                        principalTable: "LoverLog",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LoverRequest",
-                columns: table => new
-                {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    RequesterGuid = table.Column<string>(nullable: true),
-                    ReceiverGuid = table.Column<string>(nullable: true),
-                    RequestDate = table.Column<DateTime>(nullable: false),
-                    Succeed = table.Column<bool>(nullable: true),
-                    LoverGuid = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoverRequest", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_LoverRequest_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
-                        principalTable: "Lover",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LoverRequest_LoverCloudUser_ReceiverGuid",
-                        column: x => x.ReceiverGuid,
+                        name: "FK_LoverPhoto_LoverCloudUser_UploaderId",
+                        column: x => x.UploaderId,
                         principalTable: "LoverCloudUser",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LoverRequest_LoverCloudUser_RequesterGuid",
-                        column: x => x.RequesterGuid,
-                        principalTable: "LoverCloudUser",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "MenstruationDescription",
                 columns: table => new
                 {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 512, nullable: true),
-                    MenstruationLogGuid = table.Column<string>(nullable: true)
+                    MenstruationLogId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenstruationDescription", x => x.Guid);
+                    table.PrimaryKey("PK_MenstruationDescription", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MenstruationDescription_MenstruationLog_MenstruationLogGuid",
-                        column: x => x.MenstruationLogGuid,
+                        name: "FK_MenstruationDescription_MenstruationLog_MenstruationLogId",
+                        column: x => x.MenstruationLogId,
                         principalTable: "MenstruationLog",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LoverPhoto",
-                columns: table => new
-                {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
-                    UpdateDate = table.Column<DateTime>(nullable: false),
-                    PhotoTakenDate = table.Column<DateTime>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(nullable: true),
-                    Url = table.Column<string>(nullable: true),
-                    AlbumGuid = table.Column<string>(nullable: true),
-                    LoverGuid = table.Column<string>(nullable: true),
-                    LoverLogGuid = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoverPhoto", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_LoverPhoto_LoverAlbum_AlbumGuid",
-                        column: x => x.AlbumGuid,
-                        principalTable: "LoverAlbum",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LoverPhoto_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
-                        principalTable: "Lover",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LoverPhoto_LoverLog_LoverLogGuid",
-                        column: x => x.LoverLogGuid,
-                        principalTable: "LoverLog",
-                        principalColumn: "Guid",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -364,7 +366,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "Tag",
                 columns: table => new
                 {
-                    Guid = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     LoverAlbumGuid = table.Column<string>(nullable: true),
@@ -372,18 +374,18 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Guid);
+                    table.PrimaryKey("PK_Tag", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Tag_LoverAlbum_LoverAlbumGuid",
                         column: x => x.LoverAlbumGuid,
                         principalTable: "LoverAlbum",
-                        principalColumn: "Guid",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Tag_LoverPhoto_LoverPhotoGuid",
                         column: x => x.LoverPhotoGuid,
                         principalTable: "LoverPhoto",
-                        principalColumn: "Guid",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -414,26 +416,19 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lover_FemaleGuid",
-                table: "Lover",
-                column: "FemaleGuid",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Lover_MaleGuid",
-                table: "Lover",
-                column: "MaleGuid",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LoverAlbum_LoverGuid",
                 table: "LoverAlbum",
                 column: "LoverGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverAnniversary_LoverGuid",
+                name: "IX_LoverAnniversary_LoverId",
                 table: "LoverAnniversary",
-                column: "LoverGuid");
+                column: "LoverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LoverCloudUser_LoverId",
+                table: "LoverCloudUser",
+                column: "LoverId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -447,9 +442,9 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverLog_LoverGuid",
+                name: "IX_LoverLog_LoverId",
                 table: "LoverLog",
-                column: "LoverGuid");
+                column: "LoverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoverPhoto_AlbumGuid",
@@ -457,35 +452,40 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 column: "AlbumGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverPhoto_LoverGuid",
+                name: "IX_LoverPhoto_LoverId",
                 table: "LoverPhoto",
-                column: "LoverGuid");
+                column: "LoverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverPhoto_LoverLogGuid",
+                name: "IX_LoverPhoto_LoverLogId",
                 table: "LoverPhoto",
-                column: "LoverLogGuid");
+                column: "LoverLogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverRequest_LoverGuid",
+                name: "IX_LoverPhoto_UploaderId",
+                table: "LoverPhoto",
+                column: "UploaderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LoverRequest_LoverId",
                 table: "LoverRequest",
-                column: "LoverGuid",
+                column: "LoverId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverRequest_ReceiverGuid",
+                name: "IX_LoverRequest_ReceiverId",
                 table: "LoverRequest",
-                column: "ReceiverGuid");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverRequest_RequesterGuid",
+                name: "IX_LoverRequest_RequesterId",
                 table: "LoverRequest",
-                column: "RequesterGuid");
+                column: "RequesterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MenstruationDescription_MenstruationLogGuid",
+                name: "IX_MenstruationDescription_MenstruationLogId",
                 table: "MenstruationDescription",
-                column: "MenstruationLogGuid");
+                column: "MenstruationLogId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenstruationLog_LoverCloudUserId",
@@ -548,10 +548,10 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverLog");
 
             migrationBuilder.DropTable(
-                name: "Lover");
+                name: "LoverCloudUser");
 
             migrationBuilder.DropTable(
-                name: "LoverCloudUser");
+                name: "Lover");
         }
     }
 }
