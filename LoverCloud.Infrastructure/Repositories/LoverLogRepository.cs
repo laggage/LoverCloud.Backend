@@ -38,7 +38,7 @@ namespace LoverCloud.Infrastructure.Repositories
         public Task<List<LoverLog>> GetByLoverIdAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
-            return _dbContext.LoverLogs.Where(x => x.LoverGuid == userId).ToListAsync();
+            return _dbContext.LoverLogs.Where(x => x.LoverId == userId).ToListAsync();
         }
 
         public async Task<List<LoverLog>> GetByUserIdAsync(string userId)

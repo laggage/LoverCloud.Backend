@@ -1,5 +1,6 @@
 ﻿namespace LoverCloud.Infrastructure.Database.Configurations
 {
+    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,8 @@
         public void Configure(EntityTypeBuilder<Lover> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
+            builder.Property(x => x.Id)
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
             builder.ToTable(nameof(Lover));
         }
     }
@@ -19,7 +21,8 @@
         public void Configure(EntityTypeBuilder<LoverLog> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
+            builder.Property(x => x.Id)
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
             builder.ToTable(nameof(LoverLog));
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverLogs)
@@ -33,10 +36,13 @@
         public void Configure(EntityTypeBuilder<LoverAnniversary> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
+            builder.Property(x => x.Id)
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
             builder.ToTable(nameof(LoverAnniversary));
-            builder.Property(x => x.Name).HasMaxLength(50);
-            builder.Property(x => x.Description).HasMaxLength(512);
+            builder.Property(x => x.Name)
+                .HasMaxLength(LoverAnniversary.NameMaxLength);
+            builder.Property(x => x.Description)
+                .HasMaxLength(LoverAnniversary.DescriptionMaxLength);
             builder.Property(x => x.Date).HasColumnType("date");
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverAnniversaries)

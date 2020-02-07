@@ -3,9 +3,8 @@
     using System;
     using System.Collections.Generic;
 
-    public class MenstruationDescriptionResource
+    public class MenstruationDescriptionResource : Resource
     {
-        public string Guid { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
     }

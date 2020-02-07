@@ -20,7 +20,6 @@
 
     public class LoverCloudUser : IdentityUser, IEquatable<LoverCloudUser>, IEntity
     {
-
         public LoverCloudUser() : base()
         {
         }
@@ -47,6 +46,14 @@
         public virtual IList<LoverRequest> LoverRequests { get; set; }
         public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
         public virtual IList<MenstruationLog> MenstruationLogs { get; set; }
+        /// <summary>
+        /// 用户创建的相册
+        /// </summary>
+        public virtual IList<LoverAlbum> LoverAlbums { get; set; }
+        /// <summary>
+        /// 用户上传的图片
+        /// </summary>
+        public virtual IList<LoverPhoto> LoverPhotos { get; set; }
 
         public string UserPhysicalDirectory => Path.Combine("UserResources", $"{UserName}-{Id}");
 

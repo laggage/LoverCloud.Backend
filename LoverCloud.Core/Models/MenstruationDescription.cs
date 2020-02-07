@@ -12,6 +12,9 @@
         {
             Id = System.Guid.NewGuid().ToString();
         }
+
+        public const int DescriptionMaxLength = 1024;
+
         public string Id { get; set; }
         /// <summary>
         /// 姨妈期间的某一天

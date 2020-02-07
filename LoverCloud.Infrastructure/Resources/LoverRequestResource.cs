@@ -1,8 +1,7 @@
 ﻿namespace LoverCloud.Infrastructure.Resources
 {
-    public class LoverRequestResource
+    public class LoverRequestResource : Resource
     {
-        public string Id { get; set; }
         public LoverCloudUserResource Requester { get; set; }
         public LoverCloudUserResource Receiver { get; set; }
         public bool? Succeed { get; set; }

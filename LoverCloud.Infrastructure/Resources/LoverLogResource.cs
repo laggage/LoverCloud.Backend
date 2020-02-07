@@ -3,9 +3,8 @@
     using System;
     using System.Collections.Generic;
 
-    public class LoverLogResource
+    public class LoverLogResource : Resource
     {
-        public string Guid { get; set; }
         public string Content { get; set; }
         public DateTime CreateDateTime { get; set; }
         public IList<LoverPhotoResource> LoverPhotos { get; set; }

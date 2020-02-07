@@ -1,5 +1,6 @@
 ﻿namespace LoverCloud.Infrastructure.Database.Configurations
 {
+    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,8 @@
         public void Configure(EntityTypeBuilder<MenstruationLog> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
+            builder.Property(x => x.Id)
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
             builder.ToTable(nameof(MenstruationLog));
             builder.HasOne(x => x.LoverCloudUser)
                 .WithMany(x => x.MenstruationLogs)
@@ -27,7 +29,8 @@
             builder.HasOne(o => o.MenstruationLog)
                 .WithMany(o => o.MenstruationDescriptions)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.Property(x => x.Description).HasMaxLength(512);
+            builder.Property(x => x.Description)
+                .HasMaxLength(MenstruationDescription.DescriptionMaxLength);
         }
     }
 }

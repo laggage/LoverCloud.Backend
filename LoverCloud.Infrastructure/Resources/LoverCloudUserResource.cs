@@ -4,9 +4,8 @@
     using System;
     using System.Collections.Generic;
 
-    public class LoverCloudUserResource
+    public class LoverCloudUserResource : Resource
     {
-        public string Guid { get; set; }
         public string UserName { get; set; }
         public string ProfileImageUrl { get; set; }
         public string Sex { get; set; }

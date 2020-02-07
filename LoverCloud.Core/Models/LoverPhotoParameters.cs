@@ -6,5 +6,6 @@
         /// 照片名
         /// </summary>
         public string Name { get; set; }
+        public string AlbumId { get; set; }
     }
 }

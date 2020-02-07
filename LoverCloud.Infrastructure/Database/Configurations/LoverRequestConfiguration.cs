@@ -1,5 +1,6 @@
 ﻿namespace LoverCloud.Infrastructure.Database.Configurations
 {
+    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,9 @@
         public void Configure(EntityTypeBuilder<LoverRequest> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
+            builder.Property(x => x.Id)
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
+
             builder.ToTable(nameof(LoverRequest));
             builder.HasOne(x => x.Requester)
                 .WithMany(x => x.LoverRequests)

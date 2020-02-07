@@ -10,8 +10,10 @@
     {
         public Tag()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
+
+        public const byte NameMaxLength = 30;
 
         public string Id { get; set; }
         public string Name { get; set; }

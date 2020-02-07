@@ -7,5 +7,6 @@
     {
         public const string PaginationHeaderKey = "X-Pagination";
         public const string ResourcesDirectoryName = "LoverCloudResources";
+        public const byte IdLength = 36;
     }
 }

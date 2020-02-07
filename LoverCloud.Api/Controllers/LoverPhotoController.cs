@@ -108,7 +108,7 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetLoverPhotoResources")]
-        public async Task<IActionResult> GetLoverPhotoResources([FromQuery]LoverPhotoParameters parameters)
+        public async Task<IActionResult> Get([FromQuery]LoverPhotoParameters parameters)
         {
             PaginatedList<LoverPhoto> loverPhotos =
                 await _repository.GetLoverPhotosAsync(this.GetUserId(), parameters);
@@ -142,7 +142,7 @@
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLoverPhotoResource([FromRoute]string id)
+        public async Task<IActionResult> Delete([FromRoute]string id)
         {
             var loverPhoto = await _repository.FindByIdAsync(id);
             if (loverPhoto == null) return NotFound();
@@ -152,6 +152,27 @@
 
             loverPhoto.DeletePhyicalFile();
 
+            return NoContent();
+        }
+
+        /// <summary>
+        /// 更新 情侣照片(<see cref="LoverPhoto"/>) 信息
+        /// </summary>
+        /// <param name="id">情侣照片id</param>
+        /// <param name="patchDoc"></param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update([FromRoute]string id, [FromBody]JsonPatchDocument patchDoc)
+        {
+            LoverPhoto loverPhotoToUpdate = await _repository.FindByIdAsync(id);
+            if (loverPhotoToUpdate == null) return NotFound();
+
+            LoverPhotoUpdateResource loverPhotoUpdateResource = _mapper.Map<LoverPhotoUpdateResource>(loverPhotoToUpdate);
+            patchDoc.ApplyTo(loverPhotoUpdateResource);
+            _mapper.Map(loverPhotoUpdateResource, loverPhotoToUpdate);
+
+            if(!await _unitOfWork.SaveChangesAsync())
+                throw new Exception("保存数据失败");
             return NoContent();
         }
 
@@ -183,27 +204,6 @@
             }
 
             return linkResources;
-        }
-
-        /// <summary>
-        /// 更新 情侣照片(<see cref="LoverPhoto"/>) 信息
-        /// </summary>
-        /// <param name="id">情侣照片id</param>
-        /// <param name="patchDoc"></param>
-        /// <returns></returns>
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update([FromRoute]string id, [FromBody]JsonPatchDocument patchDoc)
-        {
-            LoverPhoto loverPhotoToUpdate = await _repository.FindByIdAsync(id);
-            if (loverPhotoToUpdate == null) return NotFound();
-
-            LoverPhotoUpdateResource loverPhotoUpdateResource = _mapper.Map<LoverPhotoUpdateResource>(loverPhotoToUpdate);
-            patchDoc.ApplyTo(loverPhotoUpdateResource);
-            _mapper.Map(loverPhotoUpdateResource, loverPhotoToUpdate);
-
-            if(!await _unitOfWork.SaveChangesAsync())
-                throw new Exception("保存数据失败");
-            return NoContent();
         }
     }
 }

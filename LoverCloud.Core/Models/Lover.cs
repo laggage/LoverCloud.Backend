@@ -11,7 +11,7 @@
     {
         public Lover()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             LoverAnniversaries = new List<LoverAnniversary>();
             LoverAlbums = new List<LoverAlbum>();
             LoverPhotos = new List<LoverPhoto>();
@@ -67,8 +67,11 @@
     {
         public LoverAnniversary()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
+
+        public const byte NameMaxLength = 30;
+        public const int DescriptionMaxLength = 512;
 
         public string Id { get; set; }
         public virtual Lover Lover { get; set; }

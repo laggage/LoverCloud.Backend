@@ -1,5 +1,6 @@
 ﻿namespace LoverCloud.Infrastructure.Database.Configurations
 {
+    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,7 +13,7 @@
             builder.ToTable(nameof(LoverCloudUser));
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
-                .HasColumnType("varchar(36)");
+                .HasMaxLength(LoverCloudApiConstraint.IdLength);
             builder.Property(x => x.Birth)
                 .HasColumnType("date");
             builder.Property(x => x.Sex)

@@ -3,14 +3,16 @@ using System;
 using LoverCloud.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 {
     [DbContext(typeof(LoverCloudDbContext))]
-    partial class LoverCloudDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200207074107_InitLoverCloudDbContext")]
+    partial class InitLoverCloudDbContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,8 +22,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.Lover", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<bool>("IsBoyFirstLove")
                         .HasColumnType("tinyint(1)");
@@ -40,14 +42,11 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverAlbum", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreaterId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -56,14 +55,12 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreaterId");
 
                     b.HasIndex("LoverId");
 
@@ -73,8 +70,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverAnniversary", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -84,7 +81,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasMaxLength(512);
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
@@ -100,8 +97,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverCloudUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -127,7 +124,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
@@ -183,8 +180,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverLog", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<string>("Content")
                         .HasColumnType("varchar(1024) CHARACTER SET utf8mb4")
@@ -197,7 +194,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -209,20 +206,20 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverPhoto", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<string>("AlbumId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("LoverLogId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -240,7 +237,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UploaderId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -258,20 +255,20 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.LoverRequest", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<string>("LoverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("ReceiverId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("RequesterId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<bool?>("Succeed")
                         .HasColumnType("tinyint(1)");
@@ -301,7 +298,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasMaxLength(1024);
 
                     b.Property<string>("MenstruationLogId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -313,14 +310,14 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.MenstruationLog", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverCloudUserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
@@ -335,17 +332,17 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("LoverCloud.Core.Models.Tag", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LoverAlbumGuid")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("LoverPhotoGuid")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
@@ -423,7 +420,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -445,7 +442,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -457,7 +454,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -472,7 +469,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -490,10 +487,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverAlbum", b =>
                 {
-                    b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Creater")
-                        .WithMany("LoverAlbums")
-                        .HasForeignKey("CreaterId");
-
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverAlbums")
                         .HasForeignKey("LoverId");
@@ -538,7 +531,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasForeignKey("LoverLogId");
 
                     b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Uploader")
-                        .WithMany("LoverPhotos")
+                        .WithMany()
                         .HasForeignKey("UploaderId");
                 });
 

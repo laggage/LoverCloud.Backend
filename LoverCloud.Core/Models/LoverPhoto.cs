@@ -10,8 +10,10 @@
     {
         public LoverPhoto()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
+
+        public const byte NameMaxLength = 30;
 
         public string Id { get; set; }
         /// <summary>
@@ -39,7 +41,7 @@
         /// </summary>
         public string PhotoPhysicalPath { get; set; }
 
-        public string AlbumGuid { get; set; }
+        public string AlbumId { get; set; }
         public virtual LoverAlbum Album { get; set; }
 
         public virtual Lover Lover { get; set; }
@@ -48,6 +50,10 @@
 
         public virtual IList<Tag> Tags { get; set; }
 
+        public string UploaderId { get; set; }
+        /// <summary>
+        /// 上传照片的用户
+        /// </summary>
         public virtual LoverCloudUser Uploader { get; set; }
 
         /// <summary>

@@ -2,9 +2,8 @@
 {
     using System;
 
-    public class LoverAnniversaryResource
+    public class LoverAnniversaryResource : Resource
     {
-        public string Guid { get; set; }
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }

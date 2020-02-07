@@ -10,10 +10,13 @@
         public MappingProfile()
         {
             CreateMap<Tag, TagResource>();
-            CreateMap<TagAddResource, Tag>();
+            CreateMap<TagAddResource, Tag>()
+                .ReverseMap();
 
             CreateMap<LoverAlbum, LoverAlbumResource>();
             CreateMap<LoverAlbumAddResource, LoverAlbum>();
+            CreateMap<LoverAlbumUpdateResource, LoverAlbum>()
+                .ReverseMap();
 
             CreateMap<LoverPhoto, LoverPhotoResource>();
             CreateMap<LoverPhotoAddResource, LoverPhoto>();
@@ -33,7 +36,6 @@
                 .ReverseMap();
 
             CreateMap<LoverCloudUser, LoverCloudUserResource>()
-                .ForMember(x => x.Guid, c => c.MapFrom(s => s.Id))
                 .ForMember(x => x.Sex, c => c.MapFrom(y => y.Sex.GetDescription()))
                 .ForMember(x => x.Spouse, c => c.MapFrom(y => y.GetSpouse()));
 

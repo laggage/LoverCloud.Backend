@@ -26,7 +26,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "Lover",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     RegisterDate = table.Column<DateTime>(nullable: false),
                     IsBoyFirstLove = table.Column<bool>(nullable: false),
                     IsGirlFirstLove = table.Column<bool>(nullable: false)
@@ -61,19 +61,19 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverAlbum",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     LastUpdate = table.Column<DateTime>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    LoverGuid = table.Column<string>(nullable: true)
+                    LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LoverAlbum", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoverAlbum_Lover_LoverGuid",
-                        column: x => x.LoverGuid,
+                        name: "FK_LoverAlbum_Lover_LoverId",
+                        column: x => x.LoverId,
                         principalTable: "Lover",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -83,9 +83,9 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverAnniversary",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     LoverId = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(maxLength: 50, nullable: true),
+                    Name = table.Column<string>(maxLength: 30, nullable: true),
                     Date = table.Column<DateTime>(type: "date", nullable: false),
                     Description = table.Column<string>(maxLength: 512, nullable: true)
                 },
@@ -104,7 +104,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverCloudUser",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -122,7 +122,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     Birth = table.Column<DateTime>(type: "date", nullable: false),
                     RegisterDate = table.Column<DateTime>(nullable: false),
                     Sex = table.Column<string>(nullable: false),
-                    ProfileImage = table.Column<string>(nullable: true),
+                    ProfileImagePhysicalPath = table.Column<string>(nullable: true),
                     LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -140,11 +140,10 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverLog",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     Content = table.Column<string>(maxLength: 1024, nullable: true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
                     LastUpdateTime = table.Column<DateTime>(nullable: false),
-                    LoverGuid = table.Column<string>(nullable: true),
                     LoverId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -247,7 +246,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverRequest",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     RequesterId = table.Column<string>(nullable: true),
                     ReceiverId = table.Column<string>(nullable: true),
                     RequestDate = table.Column<DateTime>(nullable: false),
@@ -281,7 +280,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "MenstruationLog",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: false),
                     LoverCloudUserId = table.Column<string>(nullable: true)
@@ -301,14 +300,14 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "LoverPhoto",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
                     UpdateDate = table.Column<DateTime>(nullable: false),
                     PhotoTakenDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     PhotoUrl = table.Column<string>(nullable: true),
                     PhotoPhysicalPath = table.Column<string>(nullable: true),
-                    AlbumGuid = table.Column<string>(nullable: true),
+                    AlbumId = table.Column<string>(nullable: true),
                     LoverId = table.Column<string>(nullable: true),
                     LoverLogId = table.Column<string>(nullable: true),
                     UploaderId = table.Column<string>(nullable: true)
@@ -317,8 +316,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     table.PrimaryKey("PK_LoverPhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoverPhoto_LoverAlbum_AlbumGuid",
-                        column: x => x.AlbumGuid,
+                        name: "FK_LoverPhoto_LoverAlbum_AlbumId",
+                        column: x => x.AlbumId,
                         principalTable: "LoverAlbum",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -348,7 +347,7 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 {
                     Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    Description = table.Column<string>(maxLength: 1024, nullable: true),
                     MenstruationLogId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -366,8 +365,8 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 name: "Tag",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    Id = table.Column<string>(maxLength: 30, nullable: false),
+                    Name = table.Column<string>(maxLength: 30, nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     LoverAlbumGuid = table.Column<string>(nullable: true),
                     LoverPhotoGuid = table.Column<string>(nullable: true)
@@ -416,9 +415,9 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverAlbum_LoverGuid",
+                name: "IX_LoverAlbum_LoverId",
                 table: "LoverAlbum",
-                column: "LoverGuid");
+                column: "LoverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoverAnniversary_LoverId",
@@ -447,9 +446,9 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                 column: "LoverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoverPhoto_AlbumGuid",
+                name: "IX_LoverPhoto_AlbumId",
                 table: "LoverPhoto",
-                column: "AlbumGuid");
+                column: "AlbumId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoverPhoto_LoverId",

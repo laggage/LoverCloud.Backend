@@ -24,7 +24,7 @@
 
         public virtual IList<LoverPhoto> LoverPhotos { get; set; }
 
-        public string LoverGuid { get; set; }
+        public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
     }
 }

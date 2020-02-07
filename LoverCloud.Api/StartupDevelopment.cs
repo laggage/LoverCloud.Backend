@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api
 {
     using AutoMapper;
+    using FluentValidation.AspNetCore;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
@@ -62,12 +63,14 @@
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddControllers()
-                .AddNewtonsoftJson(options => ConfigNewtonsoftJson(options));
+                .AddNewtonsoftJson(options => ConfigNewtonsoftJson(options))
+                .AddFluentValidation();
 
             services.AddCors(options => ConfigCors(options));
 
             var propetyMappingContainer = new PropertyMappingContainer();
             propetyMappingContainer.Register<LoverPhotoResourceMapping>();
+            propetyMappingContainer.Register<LoverAlbumResourceMapping>();
             services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
 
             services.AddSwaggerGen(options => ConfigSwagger(options));

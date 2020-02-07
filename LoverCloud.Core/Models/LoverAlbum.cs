@@ -11,14 +11,22 @@
     {
         public LoverAlbum()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
+            CreateDate = DateTime.Now;
+            LastUpdate = DateTime.Now;
         }
+
+        public const byte NameMaxLength = 30;
 
         public string Id { get; set; }
         /// <summary>
         /// 相册名
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 相册描述
+        /// </summary>
+        public string Description { get; set; }
         /// <summary>
         /// 相册创建日期
         /// </summary>
@@ -27,15 +35,16 @@
         /// 相册上次更新时间
         /// </summary>
         public DateTime LastUpdate { get; set; }
-        /// <summary>
-        /// 相册描述
-        /// </summary>
-        public string Description { get; set; }
 
         public virtual IList<LoverPhoto> Photos { get; set; }
 
-        public string LoverGuid { get; set; }
+        public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
+        public string CreaterId { get; set; }
+        /// <summary>
+        /// 相册创建人
+        /// </summary>
+        public virtual LoverCloudUser Creater { get; set; }
 
         /// <summary>
         /// 相册标签

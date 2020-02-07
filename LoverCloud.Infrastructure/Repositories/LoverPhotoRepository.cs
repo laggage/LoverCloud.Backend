@@ -5,12 +5,10 @@
     using LoverCloud.Infrastructure.Database;
     using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
-    public class LoverPhotoRepository:ILoverPhotoRepository
+    public class LoverPhotoRepository : ILoverPhotoRepository
     {
         private readonly LoverCloudDbContext _dbContext;
 
@@ -27,9 +25,11 @@
                 throw new ArgumentException($"Argument {userId} with type string can not be null or empty");
 
             var loverPhotos = _dbContext.LoverPhotos.Where(
-                x => x.Lover.LoverCloudUsers.Any(y => y.Id == userId));
-            if (!string.IsNullOrEmpty(parameters.Name))
-                loverPhotos = loverPhotos.Where(x => x.Name.Equals(parameters.Name));
+                x => x.Lover.LoverCloudUsers.Any(y => y.Id == userId) &&
+                     string.IsNullOrEmpty(parameters.Name)
+                    ? true : x.Name.Equals(parameters.Name) &&
+                      string.IsNullOrEmpty(parameters.AlbumId) ? true : x.AlbumId == parameters.AlbumId);
+
             var loverPhotoList = await loverPhotos
                 .Skip(parameters.PageSize * (parameters.PageIndex - 1))
                 .Take(parameters.PageSize)
