@@ -48,7 +48,7 @@
         }
 
         /// <summary>
-        /// 情侣日志Api接口
+        /// 获取情侣日志
         /// </summary>
         /// <returns>情侣日志</returns>
         [HttpGet(Name = "GetLoverLogs")]
@@ -98,7 +98,12 @@
             return Ok(result);
         }
 
-
+        /// <summary>
+        /// 获取情侣日志
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fields"></param>
+        /// <returns></returns>
         [HttpGet("{id}", Name = "GetLoverLog")]
         public async Task<IActionResult> Get([FromRoute]string id, [FromQuery]string fields)
         {
@@ -122,7 +127,7 @@
         /// <param name="addResource"></param>
         /// <returns></returns>
         [HttpPost(Name = "AddLoverLog")]
-        public async Task<IActionResult> Add([FromBody]LoverLogAddResource addResource)
+        public async Task<IActionResult> Add([FromForm]LoverLogAddResource addResource)
         {
             LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
             if (user.Lover == null) return UserNoLoverResult(user);
@@ -135,6 +140,20 @@
             loverLog.LastUpdateTime = DateTime.Now;
             _repository.Add(loverLog);
 
+            foreach(var formFile in addResource.Photos)
+            {
+                var photo = new LoverPhoto
+                {
+                    Name = formFile.FileName,
+                    Uploader = user,
+                    Lover = lover,
+                    LoverLog = loverLog
+                };
+                photo.PhotoPhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
+                loverLog.LoverPhotos.Add(photo);
+                await formFile.SaveToFileAsync(photo.PhotoPhysicalPath);
+            }
+
             if (!await _unitOfWork.SaveChangesAsync()) return NoContent();
 
             LoverLogResource loverLogResource = _mapper.Map<LoverLogResource>(loverLog);
@@ -143,6 +162,11 @@
             return CreatedAtRoute("AddLoverLog", loverLogResource);
         }
 
+        /// <summary>
+        /// 删除情侣日志
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}", Name = "DeleteLoverLog")]
         public async Task<IActionResult> Delete([FromRoute]string id)
         {
@@ -158,6 +182,12 @@
             return NoContent();
         }
 
+        /// <summary>
+        /// 局部更新情侣日志
+        /// </summary>
+        /// <param name="id">情侣日志id</param>
+        /// <param name="patchDoc"></param>
+        /// <returns></returns>
         [HttpPatch("{id}", Name = "PartiallyUpdateLoverLog")]
         public async Task<IActionResult> PartiallyUpdate(
             [FromRoute]string id, [FromBody]JsonPatchDocument<LoverLogUpdateResource> patchDoc)

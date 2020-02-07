@@ -2,6 +2,7 @@
 {
     using FluentValidation;
     using LoverCloud.Core.Models;
+    using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
 
@@ -18,7 +19,7 @@
         /// 最大长度: 1024
         /// </summary>
         public string Content { get; set; }
-        public IList<string> LoverPhotosId { get; set; }
+        public ICollection<IFormFile> Photos { get; set; }
     }
 
     public class LoverLogUpdateResource : LoverLogAddResource

@@ -9,6 +9,7 @@
         public LoverLog()
         {
             Id = Guid.NewGuid().ToString();
+            LoverPhotos = new List<LoverPhoto>();
         }
 
         public const int ContentMaxLength = 4096;
