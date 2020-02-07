@@ -14,6 +14,9 @@
         }
 
         public const byte NameMaxLength = 30;
+        public const int DescriptionMaxLength = 512;
+        public const int PhotoUrlMaxLength = 512;
+        public const int PhotoPhysicalPathMaxLength = 5120;
 
         public string Id { get; set; }
         /// <summary>

@@ -9,10 +9,12 @@
     {
         public void Configure(EntityTypeBuilder<MenstruationLog> builder)
         {
+            builder.ToTable(nameof(MenstruationLog));
+
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .HasMaxLength(LoverCloudApiConstraint.IdLength);
-            builder.ToTable(nameof(MenstruationLog));
+            
             builder.HasOne(x => x.LoverCloudUser)
                 .WithMany(x => x.MenstruationLogs)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -23,14 +25,18 @@
     {
         public void Configure(EntityTypeBuilder<MenstruationDescription> builder)
         {
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasColumnType("varchar(36)");
             builder.ToTable(nameof(MenstruationDescription));
+
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).HasMaxLength(LoverCloudApiConstraint.IdLength);
+            builder.Property(x => x.Description)
+                .HasMaxLength(MenstruationDescription.DescriptionMaxLength);
+
+           
             builder.HasOne(o => o.MenstruationLog)
                 .WithMany(o => o.MenstruationDescriptions)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.Property(x => x.Description)
-                .HasMaxLength(MenstruationDescription.DescriptionMaxLength);
+            
         }
     }
 }

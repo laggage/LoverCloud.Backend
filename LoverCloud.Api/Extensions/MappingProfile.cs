@@ -25,6 +25,8 @@
 
             CreateMap<LoverLog, LoverLogResource>();
             CreateMap<LoverLogAddResource, LoverLog>();
+            CreateMap<LoverLogUpdateResource, LoverLog>()
+                .ReverseMap();
 
             CreateMap<LoverAnniversary, LoverAnniversaryResource>();
 

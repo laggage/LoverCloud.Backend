@@ -10,7 +10,7 @@
     {
         public MenstruationDescription()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
 
         public const int DescriptionMaxLength = 1024;

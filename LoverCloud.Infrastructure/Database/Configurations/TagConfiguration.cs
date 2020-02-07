@@ -21,12 +21,12 @@
             
             builder.HasOne(o => o.LoverAlbum)
                 .WithMany(o => o.Tags)
-                .HasForeignKey(o => o.LoverAlbumGuid)
+                .HasForeignKey(o => o.LoverAlbumId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.LoverPhoto)
                 .WithMany(o => o.Tags)
-                .HasForeignKey(o => o.LoverPhotoGuid)
+                .HasForeignKey(o => o.LoverPhotoId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

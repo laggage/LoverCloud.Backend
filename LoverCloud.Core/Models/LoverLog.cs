@@ -8,8 +8,10 @@
     {
         public LoverLog()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
+
+        public const int ContentMaxLength = 4096;
 
         public string Id { get; set; }
         public string Content { get; set; }
@@ -26,5 +28,10 @@
 
         public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
+        public string CreaterId { get; set; }
+        /// <summary>
+        /// 情侣日志发表用户
+        /// </summary>
+        public virtual LoverCloudUser Creater { get; set; }
     }
 }

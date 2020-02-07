@@ -17,6 +17,7 @@
         }
 
         public const byte NameMaxLength = 30;
+        public const int DescriptionMaxLength = 512;
 
         public string Id { get; set; }
         /// <summary>

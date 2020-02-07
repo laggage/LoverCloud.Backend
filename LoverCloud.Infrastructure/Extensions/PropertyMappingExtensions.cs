@@ -11,6 +11,7 @@
             var propetyMappingContainer = new PropertyMappingContainer();
             propetyMappingContainer.Register<LoverPhotoResourceMapping>();
             propetyMappingContainer.Register<LoverAlbumResourceMapping>();
+            propetyMappingContainer.Register<LoverLogResourceMapping>();
             services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
         }
     }

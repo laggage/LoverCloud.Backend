@@ -9,10 +9,17 @@
     {
         public void Configure(EntityTypeBuilder<LoverAlbum> builder)
         {
+            builder.ToTable(nameof(LoverAlbum));
+
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .HasMaxLength(LoverCloudApiConstraint.IdLength);
-            builder.ToTable(nameof(LoverAlbum));
+
+            builder.Property(x => x.Name)
+                .HasMaxLength(LoverAlbum.NameMaxLength);
+            builder.Property(x => x.Description)
+                .HasMaxLength(LoverAlbum.DescriptionMaxLength);
+
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverAlbums)
                 .HasForeignKey(o => o.LoverId);
@@ -26,10 +33,19 @@
     {
         public void Configure(EntityTypeBuilder<LoverPhoto> builder)
         {
+            builder.ToTable(nameof(LoverPhoto));
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .HasMaxLength(LoverCloudApiConstraint.IdLength);
-            builder.ToTable(nameof(LoverPhoto));
+            builder.Property(x => x.Name)
+                .HasMaxLength(LoverPhoto.NameMaxLength);
+            builder.Property(x => x.Description)
+                .HasMaxLength(LoverPhoto.DescriptionMaxLength);
+            builder.Property(x => x.PhotoUrl)
+                .HasMaxLength(LoverPhoto.PhotoUrlMaxLength);
+            builder.Property(x => x.PhotoPhysicalPath)
+                .HasMaxLength(LoverPhoto.PhotoPhysicalPathMaxLength);
+
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverPhotos);
             builder.HasOne(o => o.Album)

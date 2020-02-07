@@ -67,11 +67,8 @@
                 .AddFluentValidation();
 
             services.AddCors(options => ConfigCors(options));
-
-            var propetyMappingContainer = new PropertyMappingContainer();
-            propetyMappingContainer.Register<LoverPhotoResourceMapping>();
-            propetyMappingContainer.Register<LoverAlbumResourceMapping>();
-            services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
+            
+            services.AddPropetyMapping();
 
             services.AddSwaggerGen(options => ConfigSwagger(options));
         }

@@ -54,6 +54,10 @@
         /// 用户上传的图片
         /// </summary>
         public virtual IList<LoverPhoto> LoverPhotos { get; set; }
+        /// <summary>
+        /// 用户发的情侣日志
+        /// </summary>
+        public virtual IList<LoverLog> LoverLogs { get; set; }
 
         public string UserPhysicalDirectory => Path.Combine("UserResources", $"{UserName}-{Id}");
 

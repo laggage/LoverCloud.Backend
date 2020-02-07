@@ -20,14 +20,21 @@
     {
         public void Configure(EntityTypeBuilder<LoverLog> builder)
         {
+            builder.ToTable(nameof(LoverLog));
+
             builder.HasKey(x => x.Id);
+
             builder.Property(x => x.Id)
                 .HasMaxLength(LoverCloudApiConstraint.IdLength);
-            builder.ToTable(nameof(LoverLog));
+            builder.Property(x => x.Content)
+                .HasMaxLength(LoverLog.ContentMaxLength);
+            
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverLogs)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.Property(x => x.Content).HasMaxLength(1024);
+            builder.HasOne(x => x.Creater)
+                .WithMany(user => user.LoverLogs)
+                .HasForeignKey(log => log.CreaterId);
         }
     }
 

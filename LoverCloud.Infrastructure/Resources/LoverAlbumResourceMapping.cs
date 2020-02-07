@@ -2,9 +2,7 @@
 {
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Services;
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class LoverAlbumResourceMapping : PropertyMapping<LoverAlbumResource, LoverAlbum>
     {

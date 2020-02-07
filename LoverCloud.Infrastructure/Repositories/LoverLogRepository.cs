@@ -35,24 +35,28 @@ namespace LoverCloud.Infrastructure.Repositories
             _dbContext.Update(entity);
         }
 
-        public Task<List<LoverLog>> GetByLoverIdAsync(string userId)
-        {
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
-            return _dbContext.LoverLogs.Where(x => x.LoverId == userId).ToListAsync();
-        }
+        
 
-        public async Task<List<LoverLog>> GetByUserIdAsync(string userId)
+        public async Task<PaginatedList<LoverLog>> GetLoverLogsAsync(string userId, LoverLogParameters parameters)
         {
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
-            string loverId = _dbContext.Users.Include(x => x.Lover)
-                .FirstOrDefault(x => x.Id == userId).Lover?.Id;
-            if (string.IsNullOrEmpty(loverId)) throw new Exception($"用户Id为{userId}的用户, 还没有对应的情侣");
-            return await GetByLoverIdAsync(loverId);
+            if (string.IsNullOrEmpty(userId)) 
+                throw new ArgumentNullException(nameof(userId));
+
+            IQueryable<LoverLog> paginatedQuery = _dbContext.LoverLogs.Where(
+                x => x.Lover.LoverCloudUsers.Any(user => user.Id == userId))
+                .Skip(parameters.PageSize*(parameters.PageIndex-1))
+                .Take(parameters.PageSize);
+
+            return new PaginatedList<LoverLog>(
+                parameters.PageIndex, parameters.PageSize,
+                await paginatedQuery.CountAsync(), await paginatedQuery.ToListAsync());
         }
 
         public Task<LoverLog> FindByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return _dbContext.LoverLogs
+                .Include(x => x.Lover).ThenInclude(x => x.LoverCloudUsers)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -3,14 +3,16 @@ using System;
 using LoverCloud.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 {
     [DbContext(typeof(LoverCloudDbContext))]
-    partial class LoverCloudDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200207122348_ModifyStringFieldLength")]
+    partial class ModifyStringFieldLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,9 +197,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CreaterId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
-
                     b.Property<DateTime>("LastUpdateTime")
                         .HasColumnType("datetime(6)");
 
@@ -205,8 +204,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreaterId");
 
                     b.HasIndex("LoverId");
 
@@ -529,10 +526,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.LoverLog", b =>
                 {
-                    b.HasOne("LoverCloud.Core.Models.LoverCloudUser", "Creater")
-                        .WithMany("LoverLogs")
-                        .HasForeignKey("CreaterId");
-
                     b.HasOne("LoverCloud.Core.Models.Lover", "Lover")
                         .WithMany("LoverLogs")
                         .HasForeignKey("LoverId")

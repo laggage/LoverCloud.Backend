@@ -19,10 +19,10 @@
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
 
-        public string LoverAlbumGuid { get; set; }
+        public string LoverAlbumId { get; set; }
         public virtual LoverAlbum LoverAlbum { get; set; }
 
-        public string LoverPhotoGuid { get; set; }
+        public string LoverPhotoId { get; set; }
         public virtual LoverPhoto LoverPhoto { get; set; }
     }
 }
