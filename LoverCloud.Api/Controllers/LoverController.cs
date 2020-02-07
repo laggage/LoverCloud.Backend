@@ -32,11 +32,5 @@
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
-        #region Api-LoverLog
-
-        #endregion
-
-
     }
 }

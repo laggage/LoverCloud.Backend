@@ -18,6 +18,8 @@
     using System.Linq;
     using System.Dynamic;
     using LoverCloud.Core.Extensions;
+    using Microsoft.AspNetCore.JsonPatch;
+    using System;
 
     [ApiController]
     [Authorize]
@@ -29,18 +31,21 @@
         private readonly IPropertyMappingContainer _propertyMappingContainer;
         private readonly ILoverPhotoRepository _repository;
         private readonly ILoverRepository _loverRepository;
+        private readonly ILoverCloudUserRepository _userRepository;
 
         public LoverPhotoController(IUnitOfWork unitOfWork,
             IMapper mapper,
             IPropertyMappingContainer propertyMappingContainer,
             ILoverPhotoRepository repository,
-            ILoverRepository loverRepository)
+            ILoverRepository loverRepository,
+            ILoverCloudUserRepository userRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _propertyMappingContainer = propertyMappingContainer;
             _repository = repository;
             _loverRepository = loverRepository;
+            _userRepository=userRepository;
         }
 
         /// <summary>
@@ -55,48 +60,47 @@
             return PhysicalFile(loverPhoto.PhotoPhysicalPath, $"image/png");
         }
 
-        /// <summary>
-        /// 上传照片资源
-        /// </summary>
-        /// <param name="formCollection">表单集合, 一个照片文件对应一个loverPhoto</param>
-        /// <returns></returns>
         [HttpPost(Name = "AddLoverPhoto")]
-        public async Task<IActionResult> AddLoverPhoto([FromForm]IFormCollection formCollection)
+        public async Task<IActionResult> Add([FromForm]LoverPhotoAddResource loverPhotoAddResource)
         {
-            formCollection.TryGetValue("loverPhoto", out StringValues stringValues);
-            if (stringValues.Count != formCollection.Files.Count) return BadRequest();
-
-            var lover = await _loverRepository.FindByUserIdAsync(this.GetUserId());
-            var user = lover.LoverCloudUsers.FirstOrDefault(x => x.Id == this.GetUserId());
-            if (user == null) return Unauthorized();
-            var loverPhotos = new List<LoverPhoto>();
-            for (int i = 0; i < stringValues.Count; i++)
-            {   // 构造LoverPhoto, 并保存上传的图片文件
-                string stringValue = stringValues[i];
-                var formFile = formCollection.Files[i];
-                string fileSuffix = formFile.GetFileSuffix();
-                if (string.IsNullOrEmpty(fileSuffix)) return BadRequest("无法解析文件名");
-
-                LoverPhotoAddResource loverPhotoAddResource = JsonConvert.DeserializeObject<LoverPhotoAddResource>(stringValue);
-                var loverPhoto = _mapper.Map<LoverPhoto>(loverPhotoAddResource);
-                loverPhoto.Uploader = user;
-                loverPhoto.Lover = lover;
-
-                string photoPath = loverPhoto.GeneratePhotoPhysicalPath(fileSuffix);
-
-                loverPhoto.PhotoPhysicalPath = photoPath;
-                loverPhoto.PhotoUrl = Url.Link("GetPhoto", new { loverPhoto.Id });
-
-                _repository.Add(loverPhoto);
-                loverPhotos.Add(loverPhoto);
-                await formFile.SaveToFileAsync(photoPath);
+            IFormFile file = loverPhotoAddResource.File;
+            if (file == null)   // 表单中必须包含图片文件
+            {
+                ModelState.AddModelError("loverPhotoAddResource", $"parameter {file} cannot be null");
+                return BadRequest(ModelState);
             }
 
-            bool result = await _unitOfWork.SaveChangesAsync();
-            if (!result) loverPhotos.DeletePhysicalFiles(); // 回退操作
+            // 无法自动映射表单的Tags到对应的Tags集合属性, 所以手动处理一下, 读取key为Tags的值, 反序列化json
+            // 元数据是json数组, 示例: [{"name": "value"}, {"name", "value2"}] 
+            // 表单中只能有一个tags键
+            Request.Form.TryGetValue("tags", out StringValues tagsStrings);
+            if (tagsStrings.Count > 1) return BadRequest();
+            IList<TagAddResource> tags =
+                JsonConvert.DeserializeObject<IList<TagAddResource>>(tagsStrings.FirstOrDefault());
 
-            var loverPhotoResource = _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos);
-            return CreatedAtRoute("AddLoverPhoto", null, loverPhotoResource);
+            loverPhotoAddResource.Tags = tags;
+
+            LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
+
+            Lover lover = user.Lover;
+
+            LoverPhoto loverPhoto = _mapper.Map<LoverPhoto>(loverPhotoAddResource);
+            // 生成 PhotoPhysicalPath 要用到 Uploader, 所以先设置 Uploader 的值
+            loverPhoto.Uploader = user;
+            loverPhoto.Lover = lover;
+            loverPhoto.PhotoPhysicalPath = loverPhoto.GeneratePhotoPhysicalPath(file.GetFileSuffix()); ;
+            loverPhoto.UpdateDate = DateTime.Now;
+            loverPhoto.PhotoUrl = Url.Link("GetPhoto", new {id = loverPhoto.Id});
+            // 添加到数据库
+            _repository.Add(loverPhoto);
+            if (!await _unitOfWork.SaveChangesAsync())
+                throw new Exception("数据保存失败");
+            // 保存图片文件
+            await file.SaveToFileAsync(loverPhoto.PhotoPhysicalPath);
+
+            LoverPhotoResource loverPhotoResource = _mapper.Map<LoverPhotoResource>(loverPhoto);
+
+            return CreatedAtRoute("AddLoverPhoto", loverPhotoResource);
         }
 
         /// <summary>
@@ -110,7 +114,8 @@
                 await _repository.GetLoverPhotosAsync(this.GetUserId(), parameters);
             var propertyMapping = _propertyMappingContainer.Resolve<LoverPhotoResource, LoverPhoto>();
             IEnumerable<LoverPhotoResource> loverPhotoResources =
-                _mapper.Map<IQueryable<LoverPhotoResource>>(loverPhotos)
+                _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos)
+                    .AsQueryable()
                     .ApplySort(parameters.OrderBy, propertyMapping);
             IEnumerable<ExpandoObject> shapedLoverPhotoResources =
                 loverPhotoResources.ToDynamicObject(parameters.Fields);
@@ -140,6 +145,10 @@
         public async Task<IActionResult> DeleteLoverPhotoResource([FromRoute]string id)
         {
             var loverPhoto = await _repository.FindByIdAsync(id);
+            if (loverPhoto == null) return NotFound();
+            _repository.Delete(loverPhoto);
+            if (!await _unitOfWork.SaveChangesAsync())
+                throw new Exception("数据库保存失败");
 
             loverPhoto.DeletePhyicalFile();
 
@@ -174,6 +183,27 @@
             }
 
             return linkResources;
+        }
+
+        /// <summary>
+        /// 更新 情侣照片(<see cref="LoverPhoto"/>) 信息
+        /// </summary>
+        /// <param name="id">情侣照片id</param>
+        /// <param name="patchDoc"></param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update([FromRoute]string id, [FromBody]JsonPatchDocument patchDoc)
+        {
+            LoverPhoto loverPhotoToUpdate = await _repository.FindByIdAsync(id);
+            if (loverPhotoToUpdate == null) return NotFound();
+
+            LoverPhotoUpdateResource loverPhotoUpdateResource = _mapper.Map<LoverPhotoUpdateResource>(loverPhotoToUpdate);
+            patchDoc.ApplyTo(loverPhotoUpdateResource);
+            _mapper.Map(loverPhotoUpdateResource, loverPhotoToUpdate);
+
+            if(!await _unitOfWork.SaveChangesAsync())
+                throw new Exception("保存数据失败");
+            return NoContent();
         }
     }
 }

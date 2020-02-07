@@ -21,6 +21,7 @@
         {
             if (source == null) throw new ArgumentNullException();
             if (propertyMapping == null) throw new ArgumentNullException();
+            if (orderBy == null) return source;
 
             var fields = orderBy.Split(",").Reverse();
             foreach (string field in fields)

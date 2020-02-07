@@ -37,6 +37,10 @@
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// 获取用户头像
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("profileImage", Name = "GetProfileImage")]
         public async Task<IActionResult> GetProfileImage()
         {
@@ -106,6 +110,11 @@
             user.ProfileImagePhysicalPath = physicalPath;
         }
 
+        /// <summary>
+        /// 用户信息
+        /// </summary>
+        /// <param name="fields"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery]string fields)
@@ -138,6 +147,11 @@
             return Ok(shapedUserResource);
         }
 
+        /// <summary>
+        /// 用户信息修改
+        /// </summary>
+        /// <param name="patchDoc"></param>
+        /// <returns></returns>
         [HttpPatch]
         public async Task<IActionResult> Patch(
             [FromBody]JsonPatchDocument<LoverCloudUserUpdateResource> patchDoc)
@@ -158,7 +172,6 @@
 
             return NoContent();
         }
-
         
     }
 }

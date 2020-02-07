@@ -42,22 +42,22 @@
 
         public void Add(LoverPhoto entity)
         {
-            throw new NotImplementedException();
+            _dbContext.LoverPhotos.Add(entity);
         }
 
         public void Delete(LoverPhoto entity)
         {
-            throw new NotImplementedException();
+            _dbContext.LoverPhotos.Remove(entity);
         }
 
         public void Update(LoverPhoto entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Update(entity);
         }
 
         public Task<LoverPhoto> FindByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return _dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

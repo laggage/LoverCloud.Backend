@@ -24,26 +24,32 @@
         private readonly IMapper _mapper;
         private readonly ILoverRequestRepository _repository;
         private readonly ILoverRepository _loverRepository;
+        private readonly ILoverCloudUserRepository _userRepository;
         private readonly UserManager<LoverCloudUser> _userManager;
 
         public LoverRequestController(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoverRequestRepository repository,
             ILoverRepository loverRepository,
+            ILoverCloudUserRepository  userRepository,
             UserManager<LoverCloudUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _repository = repository;
             _loverRepository = loverRepository;
+            _userRepository=userRepository;
             _userManager = userManager;
         }
 
         [HttpPost(Name = "AddLoverRequest")]
         public async Task<IActionResult> Post(LoverRequestAddResource addResource)
         {
-            var requester = await _userManager.FindByIdAsync(this.GetUserId());
+            var requester = await _userRepository.FindByIdAsync(this.GetUserId());
             if (requester == null) return Unauthorized();
+            // 被请求方已经接收到过该用户的情侣请求
+            if (requester.LoverRequests.Any(x => x.Requester.Equals(requester)))
+                return NoContent();
             var receiver = await _userManager.FindByIdAsync(addResource.ReceiverId);
             if (receiver == null) return BadRequest($"找不到Guid为 {addResource.ReceiverId} 的用户");
 
@@ -61,7 +67,7 @@
             if (!result) throw new Exception();
             var loverRequestResource = _mapper.Map<LoverRequestResource>(loverRequest);
 
-            return CreatedAtRoute("AddLoverRequest", new { loverRequest.Id }, loverRequestResource);
+            return CreatedAtRoute("AddLoverRequest", loverRequestResource);
         }
 
         [HttpPatch("{id}")]
@@ -104,6 +110,5 @@
 
             return NoContent();
         }
-
     }
 }

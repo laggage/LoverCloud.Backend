@@ -17,6 +17,8 @@
 
             CreateMap<LoverPhoto, LoverPhotoResource>();
             CreateMap<LoverPhotoAddResource, LoverPhoto>();
+            CreateMap<LoverPhotoUpdateResource, LoverPhoto>()
+                .ReverseMap();
 
             CreateMap<LoverLog, LoverLogResource>();
             CreateMap<LoverLogAddResource, LoverLog>();

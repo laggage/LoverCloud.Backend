@@ -11,6 +11,9 @@
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ILoverRepository, LoverRepository>();
             services.AddScoped<ILoverCloudUserRepository, LoverCloudUserRepository>();
+            services.AddScoped<ILoverRequestRepository, LoverRequestRepository>();
+            services.AddScoped<ILoverLogRepository, LoverLogRepository>();
+            services.AddScoped<ILoverPhotoRepository, LoverPhotoRepository>();
         }
     }
 }

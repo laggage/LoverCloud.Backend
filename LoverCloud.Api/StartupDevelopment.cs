@@ -122,7 +122,7 @@
             xmlFile = $"{typeof(LoverCloudDbContext).Assembly.GetName().Name}.xml";
             xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath, true);
-
+            
             options.OperationFilter<AddResponseHeadersFilter>();
             options.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
 
