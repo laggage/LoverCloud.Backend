@@ -6,6 +6,7 @@
     <Product>LoverCloud</Product>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>9bab62f3-6d8b-4fdb-b7c0-c43eea1463e0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

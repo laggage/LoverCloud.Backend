@@ -2,7 +2,6 @@
 {
     using AutoMapper;
     using LoverCloud.Api.Extensions;
-    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Extensions;
@@ -11,9 +10,6 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
@@ -23,26 +19,23 @@
     [ApiController]
     [Authorize]
     [Route("api/lovers/logs")]
-    public class LoverLogController : ControllerBase
+    internal class LoverLogController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILoverLogRepository _repository;
-        private readonly ILoverRepository _loverRepository;
         private readonly ILoverCloudUserRepository _userRepository;
         private readonly IPropertyMappingContainer _propertyMappingContainer;
 
         public LoverLogController(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoverLogRepository repository,
-            ILoverRepository loverRepository,
             ILoverCloudUserRepository userRepository,
             IPropertyMappingContainer propertyMappingContainer)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _repository = repository;
-            _loverRepository = loverRepository;
             _userRepository=userRepository;
             _propertyMappingContainer=propertyMappingContainer;
         }
@@ -55,45 +48,28 @@
         public async Task<IActionResult> Get([FromQuery]LoverLogParameters parameters)
         {
             string userId = this.GetUserId();
-            PaginatedList<LoverLog> loverLogs = 
+            PaginatedList<LoverLog> logs = 
                 await _repository.GetLoverLogsAsync(userId, parameters);
-            IEnumerable<LoverLogResource> loverLogResources = 
-                _mapper.Map<IEnumerable<LoverLogResource>>(loverLogs)
-                .AsQueryable()
+
+            IQueryable<LoverLog> sortedLogs = logs.AsQueryable()
                 .ApplySort(
-                    parameters.OrderBy, 
+                    parameters.OrderBy,
                     _propertyMappingContainer.Resolve<LoverLogResource, LoverLog>());
+
+            IEnumerable<LoverLogResource> loverLogResources =
+                _mapper.Map<IEnumerable<LoverLogResource>>(sortedLogs);
+
             IEnumerable<ExpandoObject> shapedLoverLogResources =
                 loverLogResources.ToDynamicObject(parameters.Fields)
-                .Select(x =>
-                {
-                    var dict = x as IDictionary<string, object>;
-                    dict.Add(
-                        "links", 
-                        CreateLinksForLoverLog(
-                            dict["Id"] as string, parameters.Fields));
-                    return x;
-                });
+                .AddLinks(this, parameters.Fields, "GetLoverLog", "DeleteLoverLog", "PartiallyUpdateLoverLog");
 
             var result = new
             {
                 value = shapedLoverLogResources,
-                links = CreateLinksForLoverLogs(parameters, loverLogs.HasPrevious, loverLogs.HasNext)
+                links = this.CreatePaginationLinks("GetLoverLogs", parameters, logs.HasPrevious, logs.HasNext)
             };
 
-            var metadata = new
-            {
-                loverLogs.PageIndex,
-                loverLogs.PageSize,
-                loverLogs.PageCount
-            };
-            Response.Headers.Add(
-                LoverCloudApiConstraint.PaginationHeaderKey,
-                new StringValues(
-                    JsonConvert.SerializeObject(metadata, new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    })));
+            this.AddPaginationHeaderToResponse(logs);
 
             return Ok(result);
         }
@@ -109,14 +85,16 @@
         {
             LoverLog loverLog = await _repository.FindByIdAsync(id);
             if (loverLog == null) return NotFound();
+
             string userId = this.GetUserId();
             if (!(loverLog?.Lover?.LoverCloudUsers.Any(user => user.Id == userId) ?? false))
                 return Forbid();
 
             LoverLogResource loverLogResource = _mapper.Map<LoverLogResource>(loverLog);
-            ExpandoObject shapedLoverLogResource = loverLogResource.ToDynamicObject(fields);
-
-            (shapedLoverLogResource as IDictionary<string, object>).Add("links", CreateLinksForLoverLog(id, fields));
+            ExpandoObject shapedLoverLogResource = loverLogResource.ToDynamicObject(fields)
+                .AddLinks(
+                this, fields, "log", "GetLoverLogs", 
+                "DeleteLoverLog", "PartiallyUpdateLoverLog");
 
             return Ok(shapedLoverLogResource);
         }
@@ -130,7 +108,7 @@
         public async Task<IActionResult> Add([FromForm]LoverLogAddResource addResource)
         {
             LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
-            if (user.Lover == null) return UserNoLoverResult(user);
+            if (user.Lover == null) return this.UserNoLoverResult(user);
             Lover lover = user.Lover;
 
             LoverLog loverLog = _mapper.Map<LoverLog>(addResource);
@@ -157,9 +135,12 @@
             if (!await _unitOfWork.SaveChangesAsync()) return NoContent();
 
             LoverLogResource loverLogResource = _mapper.Map<LoverLogResource>(loverLog);
-            ExpandoObject shapedLoverLogResource = loverLogResource.ToDynamicObject();
-            (shapedLoverLogResource as IDictionary<string, object>).Add("links", CreateLinksForLoverLog(loverLog.Id));
-            return CreatedAtRoute("AddLoverLog", loverLogResource);
+            ExpandoObject shapedLoverLogResource = loverLogResource.ToDynamicObject()
+                .AddLinks(
+                this, null, "log", "GetLoverLog", 
+                "DeleteLoverLog", "PartiallyUpdateLoverLog");
+
+            return CreatedAtRoute("AddLoverLog", shapedLoverLogResource);
         }
 
         /// <summary>
@@ -206,45 +187,6 @@
             if (!await _unitOfWork.SaveChangesAsync())
                 throw new Exception("Failed to update lover log resource");
             return NoContent();
-        }
-
-        private IActionResult UserNoLoverResult(LoverCloudUser user) => Forbid($"用户 {user} 还没有情侣, 无法操作资源");
-
-
-        private IEnumerable<LinkResource> CreateLinksForLoverLog(string id, string fields = null)
-        {
-            return new LinkResource[]
-            {
-                new LinkResource("self", "get", Url.Link("GetLoverLog", new {id, fields})),
-                new LinkResource("delete_log", "delete", Url.Link("DeleteLoverLog", new {id})),
-                new LinkResource("update_log", "patch", Url.Link("PartiallyUpdateLoverLog", new{ id })),
-            };
-        }
-
-        private IEnumerable<LinkResource> CreateLinksForLoverLogs(
-            LoverLogParameters parameters, bool hasPrevious, bool hasNext)
-        {
-            var links = new List<LinkResource>
-            {
-                new LinkResource("current_page", "get", Url.Link("GetLoverLogs", parameters))
-            };
-
-            if(hasPrevious)
-            {
-                parameters.PageIndex--;
-                links.Add(
-                    new LinkResource("previous_page", "get", Url.Link("GetLoverLogs", parameters)));
-                parameters.PageIndex++;
-            }
-            if (hasNext)
-            {
-                parameters.PageIndex++;
-                links.Add(
-                    new LinkResource("next_page", "get", Url.Link("GetLoverLogs", parameters)));
-                parameters.PageIndex--;
-            }
-
-            return links;
         }
     }
 }

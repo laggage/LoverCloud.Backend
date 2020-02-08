@@ -12,6 +12,7 @@
             propetyMappingContainer.Register<LoverPhotoResourceMapping>();
             propetyMappingContainer.Register<LoverAlbumResourceMapping>();
             propetyMappingContainer.Register<LoverLogResourceMapping>();
+            propetyMappingContainer.Register<LoverAnniversaryResourceMapping>();
             services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
         }
     }

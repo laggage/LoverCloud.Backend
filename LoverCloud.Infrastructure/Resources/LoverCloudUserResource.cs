@@ -1,8 +1,11 @@
 ﻿namespace LoverCloud.Infrastructure.Resources
 {
+    using FluentValidation;
+    using LoverCloud.Core.Models;
     using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
+    using static System.Net.Mime.MediaTypeNames;
 
     public class LoverCloudUserResource : Resource
     {
@@ -19,7 +22,10 @@
     {
         public string Password { get; set; }
         public string Email { get; set; }
-        public string Sex { get; set; }
+        /// <summary>
+        /// value can be "male" or "female"
+        /// </summary>
+        public Sex Sex { get; set; }
         public string UserName { get; set; }
         public DateTime Birth { get; set; }
         public IFormFile ProfileImage { get; set; }
@@ -30,5 +36,42 @@
         public string Email { get; set; }
         public string UserName { get; set; }
         public DateTime Birth { get; set; }
+        public IFormFile ProfileImage { get; set; }
+    }
+
+    public class LoverCoudUserAddResourceValidator : AbstractValidator<LoverCloudUserAddResource>
+    {
+        public LoverCoudUserAddResourceValidator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty()
+                .NotNull()
+                .WithName("邮箱")
+                .WithMessage("{PropertyName}是必填的")
+                .MaximumLength(LoverCloudUser.EmailMaxLength)
+                .WithMessage($"{{PropertyName}}的最大长度为{LoverCloudUser.EmailMaxLength}");
+            RuleFor(x => x.UserName)
+                .MaximumLength(LoverCloudUser.UserNameMaxLength)
+                .WithName("用户名")
+                .WithMessage($"{{PropertyName}}的最大长度{LoverCloudUser.UserNameMaxLength}, 你输入了{{TotalLength}}个字符.")
+                .NotEmpty()
+                .NotNull()
+                .WithMessage("{PropertyName}是必填的!");
+            RuleFor(x => x.Birth)
+                .NotNull()
+                .NotEmpty();
+            RuleFor(x => x.Sex)
+                .NotNull()
+                .NotEmpty()
+                .IsInEnum();
+            RuleFor(x => x.ProfileImage)
+                .NotNull()
+                .ChildRules(
+                x => x.RuleFor(file => file.FileName)
+                .NotNull()
+                .NotEmpty()
+                .Matches(@".{1,512}\.(jpg|png|bmp|jpeg|gif)"))
+                .WithMessage("文件格式错误, 文件必须是图片文件");
+        }
     }
 }

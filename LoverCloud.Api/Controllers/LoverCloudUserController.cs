@@ -18,7 +18,7 @@
     [ApiController]
     [Route("api/users")]
     [Authorize]
-    public class LoverCloudUserController : ControllerBase
+    internal class LoverCloudUserController : ControllerBase
     {
         private readonly UserManager<LoverCloudUser> _userManager;
         private readonly IMapper _mapper;
@@ -79,6 +79,9 @@
         [AllowAnonymous]
         public async Task<IActionResult> Post([FromForm]LoverCloudUserAddResource addResource)
         {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             var user = _mapper.Map<LoverCloudUser>(addResource);
             await SaveProfileImageAsync(addResource.ProfileImage, user);
 
@@ -172,6 +175,5 @@
 
             return NoContent();
         }
-        
     }
 }

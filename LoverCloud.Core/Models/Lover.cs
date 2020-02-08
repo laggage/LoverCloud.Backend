@@ -3,6 +3,7 @@
     using LoverCloud.Core.Interfaces;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// 情侣实体
@@ -58,6 +59,12 @@
         /// Lover - LoverCloudUser 为 一对多 的关系 (一个 Lover 应该包含两个LoverCloudUser)
         /// </summary>
         public virtual IList<LoverCloudUser> LoverCloudUsers { get; set; }
+
+        public bool HasUser(string userId) => LoverCloudUsers.Any(x => x.Id == userId);
+
+        public bool HasUser(LoverCloudUser user) => HasUser(user.Id);
+
+        public LoverCloudUser GetUser(string userId) => LoverCloudUsers.FirstOrDefault(x => x.Id == userId);
     }
 
     /// <summary>

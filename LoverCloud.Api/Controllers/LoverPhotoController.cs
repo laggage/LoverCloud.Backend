@@ -14,17 +14,15 @@
     using LoverCloud.Api.Extensions;
     using Newtonsoft.Json;
     using LoverCloud.Infrastructure.Extensions;
-    using Newtonsoft.Json.Serialization;
     using System.Linq;
     using System.Dynamic;
-    using LoverCloud.Core.Extensions;
     using Microsoft.AspNetCore.JsonPatch;
     using System;
 
     [ApiController]
     [Authorize]
     [Route("api/lovers/photos")]
-    public class LoverPhotoController : ControllerBase
+    internal class LoverPhotoController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -99,8 +97,10 @@
             await file.SaveToFileAsync(loverPhoto.PhotoPhysicalPath);
 
             LoverPhotoResource loverPhotoResource = _mapper.Map<LoverPhotoResource>(loverPhoto);
+            ExpandoObject result = loverPhotoResource.ToDynamicObject()
+                .AddLinks(this, null, "photo", "GetPhoto", "DeleteLoverPhoto", "PartiallyUpdateLoverPhoto");
 
-            return CreatedAtRoute("AddLoverPhoto", loverPhotoResource);
+            return CreatedAtRoute("AddLoverPhoto", result);
         }
 
         /// <summary>
@@ -110,38 +110,35 @@
         [HttpGet(Name = "GetLoverPhotoResources")]
         public async Task<IActionResult> Get([FromQuery]LoverPhotoParameters parameters)
         {
-            PaginatedList<LoverPhoto> loverPhotos =
+            PaginatedList<LoverPhoto> photos =
                 await _repository.GetLoverPhotosAsync(this.GetUserId(), parameters);
-            var propertyMapping = _propertyMappingContainer.Resolve<LoverPhotoResource, LoverPhoto>();
+
+            IQueryable<LoverPhoto> sortedPhotos = photos.AsQueryable()
+                .ApplySort(
+                parameters.OrderBy,
+                _propertyMappingContainer.Resolve<LoverPhotoResource, LoverPhoto>());
+
             IEnumerable<LoverPhotoResource> loverPhotoResources =
-                _mapper.Map<IEnumerable<LoverPhotoResource>>(loverPhotos)
-                    .AsQueryable()
-                    .ApplySort(parameters.OrderBy, propertyMapping);
+                _mapper.Map<IEnumerable<LoverPhotoResource>>(sortedPhotos);
+
             IEnumerable<ExpandoObject> shapedLoverPhotoResources =
-                loverPhotoResources.ToDynamicObject(parameters.Fields);
-            var metadata = new
-            {
-                PageIndex = loverPhotos.PageIndex,
-                PageSize = loverPhotos.PageSize,
-                PageCount = loverPhotos.PageCount
-            };
+                loverPhotoResources.ToDynamicObject(parameters.Fields)
+                .AddLinks(this, parameters.Fields, "photo", "GetPhoto", "DeleteLoverPhoto", "PartiallyUpdateLoverPhoto");
+
+            this.AddPaginationHeaderToResponse(photos);
+
             var result = new
             {
                 value = shapedLoverPhotoResources,
-                links = CreateLinksForLoverPhotos(
-                    parameters, loverPhotos.HasPrevious, loverPhotos.HasNext)
+                links = this.CreatePaginationLinks(
+                    "GetLoverPhotoResources", parameters, 
+                    photos.HasPrevious, photos.HasNext)
             };
-
-            Response.Headers.Add(
-                LoverCloudApiConstraint.PaginationHeaderKey,
-                JsonConvert.SerializeObject(metadata, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                }));
+            
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteLoverPhoto")]
         public async Task<IActionResult> Delete([FromRoute]string id)
         {
             var loverPhoto = await _repository.FindByIdAsync(id);
@@ -161,8 +158,9 @@
         /// <param name="id">情侣照片id</param>
         /// <param name="patchDoc"></param>
         /// <returns></returns>
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update([FromRoute]string id, [FromBody]JsonPatchDocument patchDoc)
+        [HttpPatch("{id}", Name = "PartiallyUpdateLoverPhoto")]
+        public async Task<IActionResult> PartiallyUpdate(
+            [FromRoute]string id, [FromBody]JsonPatchDocument patchDoc)
         {
             LoverPhoto loverPhotoToUpdate = await _repository.FindByIdAsync(id);
             if (loverPhotoToUpdate == null) return NotFound();
@@ -174,36 +172,6 @@
             if(!await _unitOfWork.SaveChangesAsync())
                 throw new Exception("保存数据失败");
             return NoContent();
-        }
-
-        private IEnumerable<LinkResource> CreateLinksForLoverPhotos(
-            QueryParameters parameters, bool hasPreviouss, bool hasNext)
-        {
-            string routeName = "GetLoverPhotoResources";
-            var newParameters = new LoverPhotoParameters { PageIndex = parameters.PageIndex, PageSize = parameters.PageSize };
-
-            var linkResources = new List<LinkResource>
-            {
-                new LinkResource(
-                    "self", "get", Url.Link(routeName, newParameters)),
-            };
-            if (hasPreviouss)
-            {
-                newParameters.PageIndex -= 1;
-                linkResources.Add(
-                    new LinkResource(
-                        "previous_page", "get", Url.Link(routeName, newParameters)));
-            }
-
-            if (hasNext)
-            {
-                newParameters.PageIndex += 1;
-                linkResources.Add(
-                    new LinkResource(
-                        "next_page", "get", Url.Link(routeName, newParameters)));
-            }
-
-            return linkResources;
         }
     }
 }

@@ -37,7 +37,8 @@
             return dynamicObj;
         }
 
-        public static IEnumerable<ExpandoObject> ToDynamicObject<T>(this IEnumerable<T> source, string fields)
+        public static IEnumerable<ExpandoObject> ToDynamicObject<T>(
+            this IEnumerable<T> source, string fields = null)
         {
             var objects = new List<ExpandoObject>();
             foreach (var s in source)

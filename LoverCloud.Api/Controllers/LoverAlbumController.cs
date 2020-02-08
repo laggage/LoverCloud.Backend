@@ -2,7 +2,6 @@
 {
     using AutoMapper;
     using LoverCloud.Api.Extensions;
-    using LoverCloud.Core.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Extensions;
@@ -11,9 +10,6 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Primitives;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
@@ -23,7 +19,7 @@
     [ApiController]
     [Route("api/lovers/albums")]
     [Authorize]
-    public class LoverAlbumController : ControllerBase
+    internal class LoverAlbumController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILoverAlbumRepository _albumRepository;
@@ -66,69 +62,39 @@
         public async Task<IActionResult> Get([FromQuery]LoverAlbumParameters parameters)
         {
             PaginatedList<LoverAlbum> albums = await _albumRepository.GetLoverAlbumsAsync(this.GetUserId(), parameters);
-            IEnumerable<LoverAlbumResource> albumResources = _mapper.Map<IEnumerable<LoverAlbumResource>>(albums)
-                .AsQueryable()
-                .ApplySort(parameters.OrderBy, _propertyMappingContainer.Resolve<LoverAlbumResource, LoverAlbum>())
-                .ToList();
+
+            IQueryable<LoverAlbum> sortedAlbums = albums.AsQueryable()
+                .ApplySort(
+                parameters.OrderBy,
+                _propertyMappingContainer.Resolve<LoverAlbumResource, LoverAlbum>());
+
+            IEnumerable<LoverAlbumResource> albumResources = 
+                _mapper.Map<IEnumerable<LoverAlbumResource>>(sortedAlbums);
+                
 
             IEnumerable<ExpandoObject> shapedAlbumResources = albumResources
                 .ToDynamicObject(parameters.Fields)
                 .Select(x =>
                 {
-                    var dict = x as IDictionary<string, object>;
-                    dict.Add("links", CreateLinksForLoverAlbum(dict["Id"] as string));
+                    string id = x.GetOrDefault("Id");
+                    if (!string.IsNullOrEmpty(id))
+                        x.TryAdd(
+                            "links",
+                            this.CreateLinksForResource(
+                                "GetLoverAlbum", "album", id,
+                                parameters.Fields, "DeleteLoverAlbum", "PartilyUpdateLoverAlbum"));
                     return x;
                 });
 
             var result = new
             {
                 value = shapedAlbumResources,
-                links = CreateLinksForLoverAlbums(parameters, albums.HasPrevious, albums.HasNext)
+                links = this.CreatePaginationLinks("GetLoverAlbums", parameters, albums.HasPrevious, albums.HasNext)
             };
 
-            var metadata = new
-            {
-                PageSize = albums.PageSize,
-                PageCount = albums.PageCount,
-                PageIndex = albums.PageIndex
-            };
-            Response.Headers.Add(
-                LoverCloudApiConstraint.PaginationHeaderKey, 
-                new StringValues(JsonConvert.SerializeObject(metadata, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                })));
+            this.AddPaginationHeaderToResponse(albums);
 
             return Ok(result);
-        }
-
-        private IEnumerable<LinkResource> CreateLinksForLoverAlbums(
-            QueryParameters parameters, bool hasPrevious, bool hasNext)
-        {
-            var links = new List<LinkResource>
-            {
-                new LinkResource("self", "get", Url.Link("GetLoverAlbums", parameters))
-            };
-
-            if(hasPrevious)
-            {
-                parameters.PageIndex--;
-                links.Add(
-                    new LinkResource(
-                        "previous_page", 
-                        "get", Url.Link("GetLoverAlbums", parameters)));
-                parameters.PageIndex++;
-            }
-            if (hasNext)
-            {
-                parameters.PageIndex++;
-                links.Add(
-                    new LinkResource(
-                        "next_page",
-                        "get", Url.Link("GetLoverAlbums", parameters)));
-                parameters.PageIndex--;
-            }
-            return links;
         }
 
         /// <summary>

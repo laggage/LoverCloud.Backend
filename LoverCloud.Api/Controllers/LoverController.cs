@@ -1,21 +1,17 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
-    using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Repositories;
-    using LoverCloud.Infrastructure.Resources;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using System;
-    using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/lovers")]
     [Authorize]
-    public class LoverController : ControllerBase
+    internal class LoverController : ControllerBase
     {
         private readonly UserManager<LoverCloudUser> _userManager;
         private readonly ILoverRepository _loverRepository;

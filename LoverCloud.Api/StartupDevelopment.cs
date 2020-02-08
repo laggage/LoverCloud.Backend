@@ -6,8 +6,6 @@
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
     using LoverCloud.Infrastructure.Extensions;
-    using LoverCloud.Infrastructure.Resources;
-    using LoverCloud.Infrastructure.Services;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -25,7 +23,7 @@
     using System.IO;
     using System.Reflection;
 
-    public class StartupDevelopment
+    internal class StartupDevelopment
     {
         private readonly IConfiguration _configuration;
 

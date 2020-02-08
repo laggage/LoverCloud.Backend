@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public static class FormFileExtensions
+    internal static class FormFileExtensions
     {
         public static async Task SaveToFileAsync(this IFormFile formFile, string filePath)
         {

@@ -22,6 +22,13 @@
     {
         public LoverCloudUser() : base()
         {
+            LoverRequests = new List<LoverRequest>();
+            ReceivedLoverRequests = new List<LoverRequest>();
+            MenstruationLogs = new List<MenstruationLog>();
+            LoverAlbums = new List<LoverAlbum>();
+            LoverPhotos = new List<LoverPhoto>();
+            LoverLogs = new List<LoverLog>();
+            RegisterDate = DateTime.Now;
         }
 
         public LoverCloudUser(string userName) : this()
@@ -29,22 +36,28 @@
             UserName = userName;
         }
 
+        public const byte EmailMaxLength = byte.MaxValue;
+        public const byte UserNameMaxLength = 50;
+
         public DateTime Birth { get; set; }
         public DateTime RegisterDate { get; set; }
         public Sex Sex { get; set; }
         /// <summary>
-        /// 表示用户头像
+        /// 表示用户头像所在物理路径
         /// </summary>
         public string ProfileImagePhysicalPath { get; set; }
-        public string GenerateProfileImagePhysicalPath(string suffix) =>
-            Path.Combine(
-                Directory.GetCurrentDirectory(),
-                LoverCloudApiConstraint.ResourcesDirectoryName, UserPhysicalDirectory,"ProfileImage", 
-                $"{UserName}.{suffix}");
-
         public virtual Lover Lover { get; set; }
+        /// <summary>
+        /// 发出的情侣请求
+        /// </summary>
         public virtual IList<LoverRequest> LoverRequests { get; set; }
+        /// <summary>
+        /// 接收到的情侣请求
+        /// </summary>
         public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
+        /// <summary>
+        /// 生理期记录, 只对女用户开放
+        /// </summary>
         public virtual IList<MenstruationLog> MenstruationLogs { get; set; }
         /// <summary>
         /// 用户创建的相册
@@ -66,6 +79,17 @@
             if (Lover == null) return null;
             return Lover?.LoverCloudUsers.FirstOrDefault(x => !x.Equals(this));
         }
+        
+        /// <summary>
+        /// 生成用户头像的保存路径
+        /// </summary>
+        /// <param name="suffix"></param>
+        /// <returns></returns>
+        public string GenerateProfileImagePhysicalPath(string suffix) =>
+            Path.Combine(
+                Directory.GetCurrentDirectory(),
+                LoverCloudApiConstraint.ResourcesDirectoryName, UserPhysicalDirectory, "ProfileImage",
+                $"{UserName}.{suffix}");
 
         public override string ToString()
         {

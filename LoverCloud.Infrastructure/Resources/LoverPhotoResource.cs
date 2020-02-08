@@ -14,7 +14,6 @@
         public DateTime PhotoTakenDate { get; set; }
         public LoverAlbumResource Album { get; set; }
         public IList<TagResource> Tags { get; set; }
-        public object ToDynamicObjec { get; set; }
     }
 
     public class LoverPhotoAddResource : LoverPhotoUpdateResource

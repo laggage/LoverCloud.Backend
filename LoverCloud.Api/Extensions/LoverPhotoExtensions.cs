@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public static class LoverPhotoExtensions
+    internal static class LoverPhotoExtensions
     {
         public static void DeletePhysicalFiles(this IEnumerable<LoverPhoto> source)
         {

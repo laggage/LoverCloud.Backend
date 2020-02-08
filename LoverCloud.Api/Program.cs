@@ -7,7 +7,7 @@ namespace LoverCloud.Api
     using Serilog;
     using Serilog.Events;
 
-    public class Program
+    internal class Program
     {
         public static int Main(string[] args)
         {

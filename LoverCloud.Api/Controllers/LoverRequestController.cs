@@ -6,19 +6,17 @@
     using Microsoft.AspNetCore.JsonPatch;
     using AutoMapper;
     using LoverCloud.Core.Interfaces;
-    using LoverCloud.Infrastructure.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     [ApiController]
     [Authorize]
     [Route("api/lovers/loverrequests")]
-    public class LoverRequestController : ControllerBase
+    internal class LoverRequestController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

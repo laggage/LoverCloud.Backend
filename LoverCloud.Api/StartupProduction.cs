@@ -11,7 +11,7 @@ namespace LoverCloud.Api
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
-    public class StartupProduction
+    internal class StartupProduction
     {
         private IConfiguration _configuration;
 

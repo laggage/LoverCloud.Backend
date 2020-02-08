@@ -17,10 +17,12 @@
             services.AddScoped<ILoverLogRepository, LoverLogRepository>();
             services.AddScoped<ILoverPhotoRepository, LoverPhotoRepository>();
             services.AddScoped<ILoverAlbumRepository, LoverAlbumRepository>();
+            services.AddScoped<ILoverAnniversaryRepository, LoverAnniversaryRepository>();
 
             services.AddTransient<IValidator<LoverAlbumAddResource>, LoverAlbumAddResourceValidator>();
             services.AddTransient<IValidator<LoverPhotoAddResource>, LoverPhotoAddResourceValidator>();
             services.AddTransient<IValidator<TagAddResource>, TagAddResourceValidator>();
+            services.AddTransient<IValidator<LoverAnniversaryAddResource>, LoverAnniversaryAddResourceValidator>();
         }
     }
 }
