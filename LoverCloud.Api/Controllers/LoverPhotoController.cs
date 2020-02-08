@@ -22,7 +22,7 @@
     [ApiController]
     [Authorize]
     [Route("api/lovers/photos")]
-    internal class LoverPhotoController : ControllerBase
+    public class LoverPhotoController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

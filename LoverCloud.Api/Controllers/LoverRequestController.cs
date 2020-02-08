@@ -16,7 +16,7 @@
     [ApiController]
     [Authorize]
     [Route("api/lovers/loverrequests")]
-    internal class LoverRequestController : ControllerBase
+    public class LoverRequestController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

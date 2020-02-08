@@ -11,7 +11,7 @@
     [ApiController]
     [Route("api/lovers")]
     [Authorize]
-    internal class LoverController : ControllerBase
+    public class LoverController : ControllerBase
     {
         private readonly UserManager<LoverCloudUser> _userManager;
         private readonly ILoverRepository _loverRepository;

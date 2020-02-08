@@ -19,7 +19,7 @@
     [ApiController]
     [Authorize]
     [Route("api/lovers/anniversaries")]
-    internal class LoverAnniversaryController : ControllerBase
+    public class LoverAnniversaryController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILoverAnniversaryRepository _anniversaryRepository;

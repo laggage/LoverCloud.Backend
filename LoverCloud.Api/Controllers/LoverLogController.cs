@@ -19,7 +19,7 @@
     [ApiController]
     [Authorize]
     [Route("api/lovers/logs")]
-    internal class LoverLogController : ControllerBase
+    public class LoverLogController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

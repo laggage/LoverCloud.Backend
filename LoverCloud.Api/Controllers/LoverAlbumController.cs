@@ -19,7 +19,7 @@
     [ApiController]
     [Route("api/lovers/albums")]
     [Authorize]
-    internal class LoverAlbumController : ControllerBase
+    public class LoverAlbumController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILoverAlbumRepository _albumRepository;
