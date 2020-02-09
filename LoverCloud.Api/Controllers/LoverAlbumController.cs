@@ -51,9 +51,8 @@
             if (album == null) return NotFound();
 
             LoverAlbumResource albumResource = _mapper.Map<LoverAlbumResource>(album);
-            ExpandoObject shapedAlbumResource = albumResource.ToDynamicObject(fields);
-            (shapedAlbumResource as IDictionary<string, object>).Add(
-                "links", CreateLinksForLoverAlbum(id, fields));
+            ExpandoObject shapedAlbumResource = albumResource.ToDynamicObject(fields)
+                .AddLinks(this, fields, "album", "GetLoverAlbum", "DeleteLoverAlbum", "PartiallyUpdateLoverAlbum");
 
             return Ok(shapedAlbumResource);
         }
@@ -70,21 +69,12 @@
 
             IEnumerable<LoverAlbumResource> albumResources = 
                 _mapper.Map<IEnumerable<LoverAlbumResource>>(sortedAlbums);
-                
 
             IEnumerable<ExpandoObject> shapedAlbumResources = albumResources
                 .ToDynamicObject(parameters.Fields)
-                .Select(x =>
-                {
-                    string id = x.GetOrDefault("Id");
-                    if (!string.IsNullOrEmpty(id))
-                        x.TryAdd(
-                            "links",
-                            this.CreateLinksForResource(
-                                "GetLoverAlbum", "album", id,
-                                parameters.Fields, "DeleteLoverAlbum", "PartilyUpdateLoverAlbum"));
-                    return x;
-                });
+                .AddLinks(
+                this, parameters.Fields, "album",
+                "GetLoverAlbum", "DeleteLoverAlbum", "PartiallyUpdateLoverAlbum");
 
             var result = new
             {
@@ -121,9 +111,8 @@
 
             LoverAlbumResource albumResource = _mapper.Map<LoverAlbumResource>(album);
 
-            ExpandoObject shapedAlbumResource = albumResource.ToDynamicObject();
-            (shapedAlbumResource as IDictionary<string, object>).Add(
-                "links", CreateLinksForLoverAlbum(albumResource.Id));
+            ExpandoObject shapedAlbumResource = albumResource.ToDynamicObject()
+                .AddLinks(this, null, "album", "GetLoverAlbum", "DeleteLoverAlbum", "PartiallyUpdateLoverAlbum");
 
             return CreatedAtRoute("AddLoverAlbum", shapedAlbumResource);
         }
@@ -157,14 +146,13 @@
         /// <param name="id"></param>
         /// <param name="patchDoc"></param>
         /// <returns></returns>
-        [HttpPatch("{id}", Name = "PartilyUpdateLoverAlbum")]
-        public async Task<IActionResult> PartilyUpdate(
+        [HttpPatch("{id}", Name = "PartiallyUpdateLoverAlbum")]
+        public async Task<IActionResult> PartiallyUpdate(
             [FromRoute]string id,  [FromBody]JsonPatchDocument<LoverAlbumUpdateResource> patchDoc)
         {
             LoverAlbum album = await _albumRepository.FindByIdAsync(id);
             if (album == null) return NotFound();
             //if (!(album.Creater.Id == id)) return Forbid();
-
             LoverAlbumUpdateResource loverAlbumUpdateResource = _mapper.Map<LoverAlbumUpdateResource>(album);
             patchDoc.ApplyTo(loverAlbumUpdateResource);
             _mapper.Map(loverAlbumUpdateResource, album);
@@ -173,19 +161,6 @@
                 throw new Exception($"Failed to update album, id: {album.Id}");
 
             return NoContent();
-        }
-
-
-        private IEnumerable<LinkResource> CreateLinksForLoverAlbum(
-            string id, string fields = null)
-        {
-            return new LinkResource[]
-            {
-                new LinkResource("self", "get", Url.Link("GetLoverAlbum", new {id, fields})),
-                new LinkResource("delete_album", "delete", Url.Link("DeleteLoverAlbum", new {id})),
-                new LinkResource("create_album", "post", Url.Link("AddLoverAlbum", null)),
-                new LinkResource("update_album", "patch", Url.Link("PartilyUpdateLoverAlbum", new {id})),
-            };
         }
 
         private  Task<LoverCloudUser> GetUserAsync()

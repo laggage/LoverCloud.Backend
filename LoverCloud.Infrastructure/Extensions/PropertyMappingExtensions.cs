@@ -13,6 +13,7 @@
             propetyMappingContainer.Register<LoverAlbumResourceMapping>();
             propetyMappingContainer.Register<LoverLogResourceMapping>();
             propetyMappingContainer.Register<LoverAnniversaryResourceMapping>();
+            propetyMappingContainer.Register<MenstruationLogResourceMapping>();
             services.AddSingleton<IPropertyMappingContainer>(propetyMappingContainer);
         }
     }

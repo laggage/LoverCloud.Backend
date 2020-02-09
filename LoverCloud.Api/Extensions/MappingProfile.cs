@@ -55,6 +55,17 @@
             CreateMap<LoverRequest, LoverRequestResource>();
             CreateMap<LoverRequest, LoverRequestUpdateResource>()
                 .ReverseMap();
+
+            // Menstruation
+            CreateMap<MenstruationLog, MenstruationLogResource>();
+            CreateMap<MenstruationLogAddResource, MenstruationLog>();
+            CreateMap<MenstruationLogUpdateResource, MenstruationLog>()
+                .ReverseMap();
+
+            CreateMap<MenstruationDescription, MenstruationDescriptionResource>();
+            CreateMap<MenstruationDescriptionAddResource, MenstruationDescription>();
+            CreateMap<MenstruationDescriptionUpdateResource, MenstruationDescription>()
+                .ReverseMap();
         }
     }
 }

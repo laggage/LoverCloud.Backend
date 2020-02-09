@@ -45,7 +45,7 @@
             // 配置身份认证
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(
-                    options => _configuration.Bind("JwtSettings", options));
+                    options =>  _configuration.Bind("JwtSettings", options));
             services.AddIdentityCore<LoverCloudUser>(options =>
                 {
                     options.Password.RequiredUniqueChars = 0;

@@ -18,11 +18,16 @@
             services.AddScoped<ILoverPhotoRepository, LoverPhotoRepository>();
             services.AddScoped<ILoverAlbumRepository, LoverAlbumRepository>();
             services.AddScoped<ILoverAnniversaryRepository, LoverAnniversaryRepository>();
+            services.AddScoped<IMenstruationLogRepository, MenstruationLogRepository>();
+            services.AddScoped<IMenstruationDescriptionRepository, MenstruationDescriptionRepository>();
 
             services.AddTransient<IValidator<LoverAlbumAddResource>, LoverAlbumAddResourceValidator>();
             services.AddTransient<IValidator<LoverPhotoAddResource>, LoverPhotoAddResourceValidator>();
             services.AddTransient<IValidator<TagAddResource>, TagAddResourceValidator>();
             services.AddTransient<IValidator<LoverAnniversaryAddResource>, LoverAnniversaryAddResourceValidator>();
+            services.AddTransient<IValidator<MenstruationLogAddResource>, MenstruationLogAddResourceValidator>();
+            services.AddTransient<IValidator<MenstruationDescriptionAddResource>, MenstruationDescriptionAddResourceValidator>();
+
         }
     }
 }

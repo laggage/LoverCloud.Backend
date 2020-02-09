@@ -11,6 +11,7 @@
         public MenstruationDescription()
         {
             Id = Guid.NewGuid().ToString();
+            Date = DateTime.Now;
         }
 
         public const int DescriptionMaxLength = 1024;
@@ -26,5 +27,10 @@
         public string Description { get; set; }
 
         public virtual MenstruationLog MenstruationLog { get; set; }
+    }
+
+    public class MenstruationDescriptionParameters : QueryParameters
+    {
+        public DateTime? Date { get; set; }
     }
 }

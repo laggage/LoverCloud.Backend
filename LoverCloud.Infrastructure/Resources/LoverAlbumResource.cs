@@ -2,7 +2,9 @@
 {
     using FluentValidation;
     using LoverCloud.Core.Models;
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     public class LoverAlbumResource : Resource
     {
@@ -29,11 +31,12 @@
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public IList<TagAddResource> Tags { get; set; }
+        public List<TagAddResource> Tags { get; set; }
     }
 
     public class LoverAlbumUpdateResource : LoverAlbumAddResource
     {
+        
     }
 
     public class LoverAlbumAddResourceValidator : AbstractValidator<LoverAlbumAddResource>
