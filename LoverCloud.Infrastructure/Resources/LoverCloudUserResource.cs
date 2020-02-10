@@ -5,13 +5,13 @@
     using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
-    using static System.Net.Mime.MediaTypeNames;
 
     public class LoverCloudUserResource : Resource
     {
         public string UserName { get; set; }
         public string ProfileImageUrl { get; set; }
         public string Sex { get; set; }
+        public DateTime Birth { get; set; }
         public MenstruationLogResource MenstruationLog { get; set; }
         public LoverCloudUserResource Spouse { get; set; }
         public IList<LoverRequestResource> ReceivedLoverRequests { get; set; }

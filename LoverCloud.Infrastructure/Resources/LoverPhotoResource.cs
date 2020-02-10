@@ -10,7 +10,7 @@
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string PhotoUrl { get; set; }
+        public string Url { get; set; }
         public DateTime PhotoTakenDate { get; set; }
         public LoverAlbumResource Album { get; set; }
         public IList<TagResource> Tags { get; set; }

@@ -21,7 +21,8 @@
                 .ReverseMap();
 
             // LoverPhoto
-            CreateMap<LoverPhoto, LoverPhotoResource>();
+            CreateMap<LoverPhoto, LoverPhotoResource>()
+                .ForMember(x => x.Url, c => c.MapFrom(x => x.PhotoUrl));
             CreateMap<LoverPhotoAddResource, LoverPhoto>();
             CreateMap<LoverPhotoUpdateResource, LoverPhoto>()
                 .ReverseMap();
