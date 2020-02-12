@@ -64,7 +64,7 @@
                 .AddNewtonsoftJson(options => ConfigNewtonsoftJson(options))
                 .AddFluentValidation();
 
-            services.AddCors(options => ConfigCors(options));
+            services.AddLoverCloudCors(_configuration);
             
             services.AddPropetyMapping();
 
@@ -78,7 +78,7 @@
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoverCloud Api V1"); });
             app.UseDeveloperExceptionPage();
-            app.UseCors(_configuration["CorSettings:PolicyName"]);
+            app.UseLoverCloudCors(_configuration);
             app.UseRouting();
 
             app.UseAuthentication();
@@ -135,22 +135,6 @@
             });
         }
 
-        private void ConfigCors(CorsOptions options)
-        {
-            var corSettings = new
-            {
-                Origins = new List<string>(),
-                ExposedHeaders = new List<string>()
-            };
-            var sec = _configuration.GetSection("CorSettings");
-            sec.Bind(corSettings);
-            options.AddPolicy(sec["PolicyName"], config =>
-            {
-                config.WithOrigins(corSettings.Origins.ToArray())
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .WithExposedHeaders(corSettings.ExposedHeaders.ToArray());
-            });
-        }
+       
     }
 }

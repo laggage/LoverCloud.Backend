@@ -2,6 +2,7 @@
 {
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
+    using LoverCloud.Infrastructure.Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -68,6 +69,9 @@
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
+
+            services.AddLoverCloudCors(_configuration);
+
         }
 
         public void Configure(IApplicationBuilder app)
@@ -76,7 +80,7 @@
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseLoverCloudCors(_configuration);
             // uncomment if you want to add MVC
             //app.UseStaticFiles();
             //app.UseRouting();
