@@ -41,12 +41,18 @@
         /// 获取用户头像
         /// </summary>
         /// <returns></returns>
-        [HttpGet("profileImage", Name = "GetProfileImage")]
-        public async Task<IActionResult> GetProfileImage()
+        [HttpGet("profileImage/{userId}", Name = "GetProfileImage")]
+        public async Task<IActionResult> GetProfileImage([FromRoute]string userId)
         {
-            LoverCloudUser user = await _repository.FindByIdAsync(this.GetUserId());
+            if (string.IsNullOrEmpty(userId)) return BadRequest("user id not assigned");
+            string loggedUserId = this.GetUserId();
+            LoverCloudUser user = await _repository.FindByIdAsync(userId);
 
-            if (user == null) return BadRequest("找不到用户数据");
+            if (user.Lover == null) return this.UserNoLoverResult(user);
+            // 只允许本人或其情侣获取自己或对方的头像...
+            if (userId != loggedUserId && user.GetSpouse()?.Id != loggedUserId) return Forbid();
+
+            if (user == null) return NotFound($"找不到id为 {userId} 的用户");
 
             if (string.IsNullOrEmpty(user.ProfileImagePhysicalPath) ||
                 !System.IO.File.Exists(user.ProfileImagePhysicalPath))
@@ -143,7 +149,8 @@
                 }
             }
 
-            userResource.ProfileImageUrl = Url.Link("GetProfileImage", null);
+            userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
+            userResource.Spouse.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Spouse.Id });
 
             var shapedUserResource = userResource.ToDynamicObject(fields);
 
