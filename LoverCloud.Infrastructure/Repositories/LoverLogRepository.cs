@@ -1,14 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace LoverCloud.Infrastructure.Repositories
+﻿namespace LoverCloud.Infrastructure.Repositories
 {
+    using Microsoft.EntityFrameworkCore;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     public class LoverLogRepository : ILoverLogRepository
@@ -42,14 +39,15 @@ namespace LoverCloud.Infrastructure.Repositories
             if (string.IsNullOrEmpty(userId)) 
                 throw new ArgumentNullException(nameof(userId));
 
-            IQueryable<LoverLog> paginatedQuery = _dbContext.LoverLogs.Where(
-                x => x.Lover.LoverCloudUsers.Any(user => user.Id == userId))
+            IQueryable<LoverLog> query = _dbContext.LoverLogs.Include(x => x.LoverPhotos).Where(
+                x => x.Lover.LoverCloudUsers.Any(user => user.Id == userId));
+            IQueryable<LoverLog> result = query
                 .Skip(parameters.PageSize*(parameters.PageIndex-1))
                 .Take(parameters.PageSize);
 
             return new PaginatedList<LoverLog>(
                 parameters.PageIndex, parameters.PageSize,
-                await paginatedQuery.CountAsync(), await paginatedQuery.ToListAsync());
+                await query.CountAsync(), await result.ToListAsync());
         }
 
         public Task<LoverLog> FindByIdAsync(string id)
@@ -57,6 +55,11 @@ namespace LoverCloud.Infrastructure.Repositories
             return _dbContext.LoverLogs
                 .Include(x => x.Lover).ThenInclude(x => x.LoverCloudUsers)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public Task<int> CountAsync(string loverId)
+        {
+            return _dbContext.LoverLogs.Where(x => x.LoverId == loverId).CountAsync();
         }
     }
 }

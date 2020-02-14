@@ -47,7 +47,7 @@
             CreateMap<LoverCloudUserUpdateResource, LoverCloudUser>()
                 .ReverseMap();
             CreateMap<LoverCloudUser, LoverCloudUserResource>()
-                .ForMember(x => x.Sex, c => c.MapFrom(y => y.Sex.GetDescription()))
+                //.ForMember(x => x.Sex, c => c.MapFrom(y => y.Sex.ToString("d")))
                 .ForMember(x => x.Spouse, c => c.MapFrom(y => y.GetSpouse()));
             CreateMap<LoverCloudUserAddResource, LoverCloudUser>();
 

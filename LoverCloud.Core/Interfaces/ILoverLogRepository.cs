@@ -6,5 +6,6 @@
     public interface ILoverLogRepository : IRepository<LoverLog>
     {
         Task<PaginatedList<LoverLog>> GetLoverLogsAsync(string userId, LoverLogParameters parameters);
+        Task<int> CountAsync(string loverId);
     }
 }

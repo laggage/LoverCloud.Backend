@@ -1,8 +1,6 @@
 ﻿namespace LoverCloud.Core.Models
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class PaginatedList<T>: List<T>
     {

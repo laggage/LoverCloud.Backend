@@ -10,12 +10,24 @@
     {
         public string UserName { get; set; }
         public string ProfileImageUrl { get; set; }
-        public string Sex { get; set; }
+        public Sex Sex { get; set; }
         public DateTime Birth { get; set; }
         public MenstruationLogResource MenstruationLog { get; set; }
         public LoverCloudUserResource Spouse { get; set; }
         public IList<LoverRequestResource> ReceivedLoverRequests { get; set; }
         public IList<LoverRequestResource> LoverRequests { get; set; }
+        /// <summary>
+        /// 情侣日志数量
+        /// </summary>
+        public int LoverLogCount { get; set; }
+        /// <summary>
+        /// 情侣相册数量
+        /// </summary>
+        public int LoverAlbumCount { get; set; }
+        /// <summary>
+        /// 情侣纪念日数量
+        /// </summary>
+        public int LoverAnniversaryCount { get; set; }
     }
 
     public class LoverCloudUserAddResource

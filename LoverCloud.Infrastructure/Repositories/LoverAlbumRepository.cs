@@ -54,5 +54,10 @@
                 .Include(x => x.Tags)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public Task<int> CountAsync(string loverId)
+        {
+            return _dbContext.LoverAlbums.Where(x => x.LoverId == loverId).CountAsync();
+        }
     }
 }

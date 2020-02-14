@@ -6,5 +6,6 @@
     public interface ILoverAlbumRepository : IRepository<LoverAlbum>
     {
         Task<PaginatedList<LoverAlbum>> GetLoverAlbumsAsync(string userId, LoverAlbumParameters parameters);
+        Task<int> CountAsync(string loverId);
     }
 }

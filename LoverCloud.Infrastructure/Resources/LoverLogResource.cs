@@ -10,6 +10,7 @@
     {
         public string Content { get; set; }
         public DateTime CreateDateTime { get; set; }
+        public string CreaterId { get; set; }
         public IList<LoverPhotoResource> LoverPhotos { get; set; }
     }
 
@@ -31,7 +32,9 @@
         public LoverLogAddResourceValidator()
         {
             RuleFor(x => x.Content)
-                .MaximumLength(LoverLog.ContentMaxLength);
+                .MaximumLength(LoverLog.ContentMaxLength)
+                .NotEmpty()
+                .NotNull();
         }
     }
 }

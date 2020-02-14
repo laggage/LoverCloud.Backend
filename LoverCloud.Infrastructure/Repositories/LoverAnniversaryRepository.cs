@@ -49,5 +49,10 @@
                 parameters.PageIndex, parameters.PageSize,
                 await paginatedQuery.CountAsync(), await paginatedQuery.ToListAsync());
         }
+
+        public Task<int> CountAsync(string loverId)
+        {
+            return _dbContext.LoverAnniversaries.CountAsync();
+        }
     }
 }

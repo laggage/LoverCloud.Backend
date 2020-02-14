@@ -24,17 +24,26 @@
         private readonly IMapper _mapper;
         private readonly ILoverCloudUserRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILoverLogRepository _logRepository;
+        private readonly ILoverAnniversaryRepository _anniversaryRepository;
+        private readonly ILoverAlbumRepository _albumRepository;
 
         public LoverCloudUserController(
             UserManager<LoverCloudUser> userManager,
             IMapper mapper,
             ILoverCloudUserRepository repository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ILoverLogRepository logRepository,
+            ILoverAnniversaryRepository anniversaryRepository,
+            ILoverAlbumRepository albumRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _repository = repository;
             _unitOfWork = unitOfWork;
+            _logRepository=logRepository;
+            _anniversaryRepository=anniversaryRepository;
+            _albumRepository=albumRepository;
         }
 
         /// <summary>
@@ -151,7 +160,10 @@
 
             userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
             userResource.Spouse.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Spouse.Id });
-
+            userResource.Spouse.LoverAlbumCount = userResource.LoverAlbumCount = await _albumRepository.CountAsync(user.Lover.Id);
+            userResource.Spouse.LoverLogCount = userResource.LoverLogCount = await _logRepository.CountAsync(user.Lover.Id);
+            userResource.Spouse.LoverAnniversaryCount = userResource.LoverAnniversaryCount = await _anniversaryRepository.CountAsync(user.Lover.Id);
+            
             var shapedUserResource = userResource.ToDynamicObject(fields);
 
             return Ok(shapedUserResource);

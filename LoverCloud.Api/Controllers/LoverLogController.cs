@@ -107,6 +107,9 @@
         [HttpPost(Name = "AddLoverLog")]
         public async Task<IActionResult> Add([FromForm]LoverLogAddResource addResource)
         {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
             if (user.Lover == null) return this.UserNoLoverResult(user);
             Lover lover = user.Lover;
@@ -125,8 +128,10 @@
                     Name = formFile.FileName,
                     Uploader = user,
                     Lover = lover,
-                    LoverLog = loverLog
+                    LoverLog = loverLog,
+                    PhotoTakenDate = DateTime.Now,
                 };
+                photo.PhotoUrl = Url.Link("GetPhoto", new { id = photo.Id });
                 photo.PhotoPhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
                 loverLog.LoverPhotos.Add(photo);
                 await formFile.SaveToFileAsync(photo.PhotoPhysicalPath);
