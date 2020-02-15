@@ -19,20 +19,24 @@
 
         public void Add(LoverLog entity)
         {
-            _dbContext.Add(entity);
+            _dbContext.LoverLogs.Add(entity);
         }
 
         public void Delete(LoverLog entity)
         {
-            _dbContext.Remove(entity);
+
+            var photos = _dbContext.LoverPhotos.Where(x => x.LoverLog.Id == entity.Id);
+            foreach (LoverPhoto item in photos)
+            {
+                _dbContext.LoverPhotos.Remove(item);
+            }
+            _dbContext.LoverLogs.Remove(entity);
         }
 
         public void Update(LoverLog entity)
         {
-            _dbContext.Update(entity);
+            _dbContext.LoverLogs.Update(entity);
         }
-
-        
 
         public async Task<PaginatedList<LoverLog>> GetLoverLogsAsync(string userId, LoverLogParameters parameters)
         {

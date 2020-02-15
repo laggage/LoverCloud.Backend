@@ -120,22 +120,22 @@
             loverLog.CreateDateTime = DateTime.Now;
             loverLog.LastUpdateTime = DateTime.Now;
             _repository.Add(loverLog);
-
-            foreach(var formFile in addResource.Photos)
-            {
-                var photo = new LoverPhoto
+            if(addResource.Photos != null)
+                foreach(var formFile in addResource.Photos)
                 {
-                    Name = formFile.FileName,
-                    Uploader = user,
-                    Lover = lover,
-                    LoverLog = loverLog,
-                    PhotoTakenDate = DateTime.Now,
-                };
-                photo.PhotoUrl = Url.Link("GetPhoto", new { id = photo.Id });
-                photo.PhotoPhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
-                loverLog.LoverPhotos.Add(photo);
-                await formFile.SaveToFileAsync(photo.PhotoPhysicalPath);
-            }
+                    var photo = new LoverPhoto
+                    {
+                        Name = formFile.FileName,
+                        Uploader = user,
+                        Lover = lover,
+                        LoverLog = loverLog,
+                        PhotoTakenDate = DateTime.Now,
+                    };
+                    photo.PhotoUrl = Url.Link("GetPhoto", new { id = photo.Id });
+                    photo.PhotoPhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
+                    loverLog.LoverPhotos.Add(photo);
+                    await formFile.SaveToFileAsync(photo.PhotoPhysicalPath);
+                }
 
             if (!await _unitOfWork.SaveChangesAsync()) return NoContent();
 
@@ -158,7 +158,10 @@
         {
             LoverLog loverLog = await _repository.FindByIdAsync(id);
             if (loverLog== null) return NotFound();
-            if (loverLog.CreaterId != this.GetUserId())
+
+            LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
+            if (user.Lover == null) return this.UserNoLoverResult(user);
+            if (loverLog.LoverId != user.Lover.Id)
                 return Forbid($"Id为:\"{this.GetUserId()}\"没有权限删除本资源");
 
             _repository.Delete(loverLog);

@@ -10,6 +10,9 @@
     using LoverCloud.Core.Interfaces;
     using Microsoft.AspNetCore.Identity;
 
+    /// <summary>
+    /// male = 1, female = 2
+    /// </summary>
     public enum Sex
     {
         [Description("男")]

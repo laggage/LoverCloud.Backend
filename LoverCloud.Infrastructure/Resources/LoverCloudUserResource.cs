@@ -10,6 +10,9 @@
     {
         public string UserName { get; set; }
         public string ProfileImageUrl { get; set; }
+        /// <summary>
+        /// male=1, female=2
+        /// </summary>
         public Sex Sex { get; set; }
         public DateTime Birth { get; set; }
         public MenstruationLogResource MenstruationLog { get; set; }
@@ -34,11 +37,11 @@
     {
         public string Password { get; set; }
         public string Email { get; set; }
-        /// <summary>
-        /// value can be "male" or "female"
-        /// </summary>
         public Sex Sex { get; set; }
         public string UserName { get; set; }
+        /// <summary>
+        /// 用户生日
+        /// </summary>
         public DateTime Birth { get; set; }
         public IFormFile ProfileImage { get; set; }
     }
