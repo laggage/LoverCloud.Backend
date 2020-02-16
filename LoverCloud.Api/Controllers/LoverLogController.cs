@@ -57,7 +57,16 @@
                     _propertyMappingContainer.Resolve<LoverLogResource, LoverLog>());
 
             IEnumerable<LoverLogResource> loverLogResources =
-                _mapper.Map<IEnumerable<LoverLogResource>>(sortedLogs);
+                _mapper.Map<IEnumerable<LoverLogResource>>(sortedLogs)
+                .Select(x =>
+                {
+                    Parallel.ForEach(x.LoverPhotos, photo =>
+                    {
+                        photo.Url = Url.Link("GetPhoto", new { id = photo.Id });
+                    });
+                    return x;
+                });
+            
 
             IEnumerable<ExpandoObject> shapedLoverLogResources =
                 loverLogResources.ToDynamicObject(parameters.Fields)
@@ -131,10 +140,9 @@
                         LoverLog = loverLog,
                         PhotoTakenDate = DateTime.Now,
                     };
-                    photo.PhotoUrl = Url.Link("GetPhoto", new { id = photo.Id });
-                    photo.PhotoPhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
+                    photo.PhysicalPath = photo.GeneratePhotoPhysicalPath(formFile.GetFileSuffix());
                     loverLog.LoverPhotos.Add(photo);
-                    await formFile.SaveToFileAsync(photo.PhotoPhysicalPath);
+                    await formFile.SaveToFileAsync(photo.PhysicalPath);
                 }
 
             if (!await _unitOfWork.SaveChangesAsync()) return NoContent();

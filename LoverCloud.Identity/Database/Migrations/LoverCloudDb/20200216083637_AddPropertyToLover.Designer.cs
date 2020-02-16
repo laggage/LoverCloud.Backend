@@ -3,14 +3,16 @@ using System;
 using LoverCloud.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 {
     [DbContext(typeof(LoverCloudDbContext))]
-    partial class LoverCloudDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200216083637_AddPropertyToLover")]
+    partial class AddPropertyToLover
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,9 +24,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                     b.Property<string>("Id")
                         .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
                         .HasMaxLength(36);
-
-                    b.Property<string>("CoverImageId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("IsBoyFirstLove")
                         .HasColumnType("tinyint(1)");
@@ -42,8 +41,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoverImageId");
 
                     b.HasIndex("LoveDayId")
                         .IsUnique();
@@ -253,16 +250,16 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
                         .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
                         .HasMaxLength(30);
 
+                    b.Property<string>("PhotoPhysicalPath")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4")
+                        .HasMaxLength(5120);
+
                     b.Property<DateTime>("PhotoTakenDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("varchar(512) CHARACTER SET utf8mb4")
                         .HasMaxLength(512);
-
-                    b.Property<string>("PhysicalPath")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(5120);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");
@@ -519,10 +516,6 @@ namespace LoverCloud.Identity.Database.Migrations.LoverCloudDb
 
             modelBuilder.Entity("LoverCloud.Core.Models.Lover", b =>
                 {
-                    b.HasOne("LoverCloud.Core.Models.LoverPhoto", "CoverImage")
-                        .WithMany()
-                        .HasForeignKey("CoverImageId");
-
                     b.HasOne("LoverCloud.Core.Models.LoverAnniversary", "LoveDay")
                         .WithOne()
                         .HasForeignKey("LoverCloud.Core.Models.Lover", "LoveDayId");

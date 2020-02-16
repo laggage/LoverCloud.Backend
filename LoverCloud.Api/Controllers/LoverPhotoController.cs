@@ -18,6 +18,9 @@
     using System.Dynamic;
     using Microsoft.AspNetCore.JsonPatch;
     using System;
+    using Serilog;
+    using System.Reflection;
+    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     [Authorize]
@@ -54,8 +57,28 @@
         [HttpGet("files/{id}", Name = "GetPhoto")]
         public async Task<IActionResult> GetLoverPhoto([FromRoute]string id)
         {
-            var loverPhoto = await _repository.FindByIdAsync(id);
-            return PhysicalFile(loverPhoto.PhotoPhysicalPath, $"image/png");
+            var loverPhoto = await _repository.FindByIdAsync(
+                id, q => q.Include(x => x.Uploader));
+            if (loverPhoto == null) return NotFound("资源不存在");
+            if(string.IsNullOrEmpty(loverPhoto.PhysicalPath))
+            {   // 照片资源的物理路径为空, 尝试自动寻找路径
+                string[] suffixes = { "bmp", "jpg", "png", "jpeg", "gif" };
+                foreach (string suffix in suffixes)
+                {
+                    string path = loverPhoto.GeneratePhotoPhysicalPath(suffix);
+                    if (System.IO.File.Exists(path))
+                    {
+                        loverPhoto.PhysicalPath = path;
+                        if (!await _unitOfWork.SaveChangesAsync())
+                            Log.Error($"Failed to save chage at {MethodBase.GetCurrentMethod()}");
+                        break;
+                    }
+                }
+            }
+            if(!System.IO.File.Exists(loverPhoto.PhysicalPath))
+                return NotFound();
+            
+            return PhysicalFile(loverPhoto.PhysicalPath, $"image/png");
         }
 
         [HttpPost(Name = "AddLoverPhoto")]
@@ -86,7 +109,7 @@
             // 生成 PhotoPhysicalPath 要用到 Uploader, 所以先设置 Uploader 的值
             loverPhoto.Uploader = user;
             loverPhoto.Lover = lover;
-            loverPhoto.PhotoPhysicalPath = loverPhoto.GeneratePhotoPhysicalPath(file.GetFileSuffix()); ;
+            loverPhoto.PhysicalPath = loverPhoto.GeneratePhotoPhysicalPath(file.GetFileSuffix()); ;
             loverPhoto.UpdateDate = DateTime.Now;
             loverPhoto.PhotoUrl = Url.Link("GetPhoto", new {id = loverPhoto.Id});
             // 添加到数据库
@@ -94,7 +117,7 @@
             if (!await _unitOfWork.SaveChangesAsync())
                 throw new Exception("数据保存失败");
             // 保存图片文件
-            await file.SaveToFileAsync(loverPhoto.PhotoPhysicalPath);
+            await file.SaveToFileAsync(loverPhoto.PhysicalPath);
 
             LoverPhotoResource loverPhotoResource = _mapper.Map<LoverPhotoResource>(loverPhoto);
             ExpandoObject result = loverPhotoResource.ToDynamicObject()

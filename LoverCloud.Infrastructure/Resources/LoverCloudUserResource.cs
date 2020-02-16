@@ -19,6 +19,7 @@
         public LoverCloudUserResource Spouse { get; set; }
         public IList<LoverRequestResource> ReceivedLoverRequests { get; set; }
         public IList<LoverRequestResource> LoverRequests { get; set; }
+        public LoverResource Lover { get; set; }
         /// <summary>
         /// 情侣日志数量
         /// </summary>
@@ -52,6 +53,7 @@
         public string UserName { get; set; }
         public DateTime Birth { get; set; }
         public IFormFile ProfileImage { get; set; }
+        public LoverUpdateResource Lover { get; set; }
     }
 
     public class LoverCoudUserAddResourceValidator : AbstractValidator<LoverCloudUserAddResource>

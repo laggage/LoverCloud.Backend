@@ -54,6 +54,13 @@
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverAnniversaries)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<Lover>()
+                .WithOne(x => x.LoveDay)
+                .HasForeignKey<Lover>(x => x.LoveDayId);
+            builder.HasOne<Lover>()
+                .WithOne(x => x.WeddingDay)
+                .HasForeignKey<Lover>(x => x.WeddingDayId);
         }
     }
 }

@@ -42,7 +42,8 @@
         /// <summary>
         /// 图片文件在磁盘上的物理路径
         /// </summary>
-        public string PhotoPhysicalPath { get; set; }
+        public string PhysicalPath { get; set; }
+
 
         public string AlbumId { get; set; }
         public virtual LoverAlbum Album { get; set; }
@@ -75,12 +76,12 @@
         }
 
         /// <summary>
-        /// 根据 <see cref="PhotoPhysicalPath"/> 删除物理磁盘上的图片文件
+        /// 根据 <see cref="PhysicalPath"/> 删除物理磁盘上的图片文件
         /// </summary>
         public void DeletePhyicalFile()
         {
-            if (File.Exists(PhotoPhysicalPath))
-                File.Delete(PhotoPhysicalPath);
+            if (File.Exists(PhysicalPath))
+                File.Delete(PhysicalPath);
         }
     }
 }

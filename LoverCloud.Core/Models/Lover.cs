@@ -13,6 +13,12 @@
         public Lover()
         {
             Id = Guid.NewGuid().ToString();
+            LoveDay = new LoverAnniversary
+            {
+                Name = "相恋日",
+                Description = "那一年, 那一天, 我们在一起了...",
+                Date = DateTime.Now
+            };
             LoverAnniversaries = new List<LoverAnniversary>();
             LoverAlbums = new List<LoverAlbum>();
             LoverPhotos = new List<LoverPhoto>();
@@ -21,7 +27,6 @@
         }
 
         public string Id { get; set; }
-
         /// <summary>
         /// 注册时间
         /// </summary>
@@ -34,6 +39,21 @@
         /// 女方是否为初恋
         /// </summary>
         public bool IsGirlFirstLove { get; set; }
+        public string LoveDayId { get; set; }
+        /// <summary>
+        /// 相恋日
+        /// </summary>
+        public virtual LoverAnniversary LoveDay { get; set; }
+        public string WeddingDayId { get; set; }
+        /// <summary>
+        /// 结婚纪念日
+        /// </summary>
+        public virtual LoverAnniversary WeddingDay { get; set; }
+        public string CoverImageId { get; set; }
+        /// <summary>
+        /// 封面图片
+        /// </summary>
+        public LoverPhoto CoverImage { get; set; }
         /// <summary>
         /// 情侣纪念日导航属性
         /// </summary>

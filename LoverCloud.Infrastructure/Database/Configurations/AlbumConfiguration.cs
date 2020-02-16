@@ -43,7 +43,7 @@
                 .HasMaxLength(LoverPhoto.DescriptionMaxLength);
             builder.Property(x => x.PhotoUrl)
                 .HasMaxLength(LoverPhoto.PhotoUrlMaxLength);
-            builder.Property(x => x.PhotoPhysicalPath)
+            builder.Property(x => x.PhysicalPath)
                 .HasMaxLength(LoverPhoto.PhotoPhysicalPathMaxLength);
 
             builder.HasOne(o => o.Lover)

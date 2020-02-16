@@ -59,5 +59,13 @@
         {
             return _dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public Task<LoverPhoto> FindByIdAsync(string id, Func<IQueryable<LoverPhoto>, IQueryable<LoverPhoto>> configIncludable = null)
+        {
+            var items = configIncludable?.Invoke(
+                _dbContext.LoverPhotos) 
+                ?? _dbContext.LoverPhotos;
+            return items.FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

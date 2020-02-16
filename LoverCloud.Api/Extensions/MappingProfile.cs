@@ -2,13 +2,17 @@
 {
     using AutoMapper;
     using LoverCloud.Core.Models;
-    using LoverCloud.Infrastructure.Extensions;
     using LoverCloud.Infrastructure.Resources;
 
     internal class MappingProfile : Profile
     {
         public MappingProfile()
         {
+            // Lover
+            CreateMap<Lover, LoverResource>();
+            CreateMap<LoverUpdateResource, Lover>()
+                .ReverseMap();
+
             // Tag
             CreateMap<Tag, TagResource>();
             CreateMap<TagAddResource, Tag>()
