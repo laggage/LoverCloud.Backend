@@ -52,7 +52,7 @@
 
         public Task<int> CountAsync(string loverId)
         {
-            return _dbContext.LoverAnniversaries.Where(x => x.Id == loverId)
+            return _dbContext.LoverAnniversaries.Where(x => x.LoverId == loverId)
                 .CountAsync();
         }
     }

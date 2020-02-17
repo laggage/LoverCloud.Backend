@@ -25,7 +25,7 @@
 
         public static IActionResult UserNoLoverResult(
             this ControllerBase contorllerBase, LoverCloudUser user) =>
-            contorllerBase.Forbid($"用户 {user} 还没有情侣, 无法操作资源");
+            contorllerBase.Forbid($"用户 {user?.ToString()??string.Empty} 还没有情侣, 无法操作资源");
 
         public static void AddPaginationHeaderToResponse<T>(this ControllerBase controller, PaginatedList<T> list) =>
             controller.Response.Headers.Add(

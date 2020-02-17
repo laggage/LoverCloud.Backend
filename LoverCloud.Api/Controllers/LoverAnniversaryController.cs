@@ -81,7 +81,7 @@
             LoverAnniversary anniversary = await _anniversaryRepository.FindByIdAsync(id);
             if (anniversary == null) return NotFound();
 
-            if (anniversary.Lover.HasUser(this.GetUserId()))
+            if (!anniversary.Lover.HasUser(this.GetUserId()))
                 return Forbid();
 
             _anniversaryRepository.Delete(anniversary);
@@ -121,7 +121,7 @@
             if (anniversary == null) return NotFound();
             string userId = this.GetUserId();
             if (!(anniversary.Lover?.HasUser(userId) ?? false))
-                return this.UserNoLoverResult(anniversary.Lover.GetUser(userId));
+                return this.UserNoLoverResult(anniversary.Lover?.GetUser(userId));
 
             LoverAnniversaryResource anniversaryResource = _mapper.Map<LoverAnniversaryResource>(anniversary);
 

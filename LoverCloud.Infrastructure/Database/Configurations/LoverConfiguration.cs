@@ -53,6 +53,7 @@
             builder.Property(x => x.Date).HasColumnType("date");
             builder.HasOne(o => o.Lover)
                 .WithMany(o => o.LoverAnniversaries)
+                .HasForeignKey(o => o.LoverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<Lover>()

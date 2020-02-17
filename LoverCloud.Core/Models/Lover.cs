@@ -101,6 +101,7 @@
         public const int DescriptionMaxLength = 512;
 
         public string Id { get; set; }
+        public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
         /// <summary>
         /// 纪念日名称
