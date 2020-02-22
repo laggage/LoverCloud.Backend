@@ -24,11 +24,15 @@
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException($"Argument {userId} with type string can not be null or empty");
 
-            var loverPhotos = _dbContext.LoverPhotos.Where(
+            var loverPhotos = _dbContext.LoverPhotos
+                .Include(x => x.Lover)
+                .ThenInclude(x => x.LoverCloudUsers)
+                .Where(
                 x => x.Lover.LoverCloudUsers.Any(y => y.Id == userId) &&
-                     string.IsNullOrEmpty(parameters.Name)
-                    ? true : x.Name.Equals(parameters.Name) &&
-                      string.IsNullOrEmpty(parameters.AlbumId) ? true : x.AlbumId == parameters.AlbumId);
+                     (string.IsNullOrEmpty(parameters.Name)
+                    ? true : x.Name.Equals(parameters.Name)) &&
+                      (string.IsNullOrEmpty(parameters.AlbumId) 
+                      ? true : x.AlbumId == parameters.AlbumId));
 
             var loverPhotoList = await loverPhotos
                 .Skip(parameters.PageSize * (parameters.PageIndex - 1))

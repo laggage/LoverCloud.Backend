@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Authorizations;
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
@@ -17,7 +18,7 @@
     using System.Threading.Tasks;
 
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.LoverResourcePolicy)] // 用户必须有情侣
     [Route("api/lovers/logs")]
     public class LoverLogController : ControllerBase
     {
@@ -26,18 +27,21 @@
         private readonly ILoverLogRepository _repository;
         private readonly ILoverCloudUserRepository _userRepository;
         private readonly IPropertyMappingContainer _propertyMappingContainer;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverLogController(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoverLogRepository repository,
             ILoverCloudUserRepository userRepository,
-            IPropertyMappingContainer propertyMappingContainer)
+            IPropertyMappingContainer propertyMappingContainer,
+            IAuthorizationService authorizationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _repository = repository;
             _userRepository=userRepository;
             _propertyMappingContainer=propertyMappingContainer;
+            _authorizationService=authorizationService;
         }
 
         /// <summary>
@@ -114,13 +118,10 @@
         /// <param name="addResource"></param>
         /// <returns></returns>
         [HttpPost(Name = "AddLoverLog")]
+        [Authorize(Policy = AuthorizationPolicies.LoverResourcePolicy)]
         public async Task<IActionResult> Add([FromForm]LoverLogAddResource addResource)
         {
-            if (!ModelState.IsValid)
-                return UnprocessableEntity(ModelState);
-
             LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
-            if (user.Lover == null) return this.UserNoLoverResult(user);
             Lover lover = user.Lover;
 
             LoverLog loverLog = _mapper.Map<LoverLog>(addResource);
@@ -167,11 +168,11 @@
             LoverLog loverLog = await _repository.FindByIdAsync(id);
             if (loverLog== null) return NotFound();
 
-            LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
-            if (user.Lover == null) return this.UserNoLoverResult(user);
-            if (loverLog.LoverId != user.Lover.Id)
-                return Forbid($"Id为:\"{this.GetUserId()}\"没有权限删除本资源");
-
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User, loverLog, Operations.Delete);
+            if(!authorizationResult.Succeeded)
+                return Forbid();
+            
             _repository.Delete(loverLog);
             if (!await _unitOfWork.SaveChangesAsync())
                 throw new Exception("Failed to delete resource");
@@ -191,8 +192,13 @@
         {
             LoverLog loverLog = await _repository.FindByIdAsync(id);
             if (loverLog == null) return NotFound();
-            if (loverLog.CreaterId != this.GetUserId())
+            
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User, loverLog, Operations.Update);
+            if(!authorizationResult.Succeeded)
+            {
                 return Forbid();
+            }
 
             LoverLogUpdateResource loverLogUpdateResource = _mapper.Map<LoverLogUpdateResource>(loverLog);
 

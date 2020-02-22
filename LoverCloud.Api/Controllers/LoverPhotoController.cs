@@ -21,6 +21,7 @@
     using Serilog;
     using System.Reflection;
     using Microsoft.EntityFrameworkCore;
+    using LoverCloud.Api.Authorizations;
 
     [ApiController]
     [Authorize]
@@ -33,13 +34,15 @@
         private readonly ILoverPhotoRepository _repository;
         private readonly ILoverRepository _loverRepository;
         private readonly ILoverCloudUserRepository _userRepository;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverPhotoController(IUnitOfWork unitOfWork,
             IMapper mapper,
             IPropertyMappingContainer propertyMappingContainer,
             ILoverPhotoRepository repository,
             ILoverRepository loverRepository,
-            ILoverCloudUserRepository userRepository)
+            ILoverCloudUserRepository userRepository,
+            IAuthorizationService authorizationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -47,6 +50,7 @@
             _repository = repository;
             _loverRepository = loverRepository;
             _userRepository=userRepository;
+            _authorizationService=authorizationService;
         }
 
         /// <summary>
@@ -96,6 +100,7 @@
             // 表单中只能有一个tags键
             Request.Form.TryGetValue("tags", out StringValues tagsStrings);
             if (tagsStrings.Count > 1) return BadRequest();
+            if (tagsStrings.Count <= 0) tagsStrings = new StringValues("[]");
             IList<TagAddResource> tags =
                 JsonConvert.DeserializeObject<IList<TagAddResource>>(tagsStrings.FirstOrDefault());
 
@@ -166,6 +171,14 @@
         {
             var loverPhoto = await _repository.FindByIdAsync(id);
             if (loverPhoto == null) return NotFound();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User, loverPhoto, Operations.Delete);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             _repository.Delete(loverPhoto);
             if (!await _unitOfWork.SaveChangesAsync())
                 throw new Exception("数据库保存失败");
@@ -187,6 +200,13 @@
         {
             LoverPhoto loverPhotoToUpdate = await _repository.FindByIdAsync(id);
             if (loverPhotoToUpdate == null) return NotFound();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User, loverPhotoToUpdate, Operations.Update);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
 
             LoverPhotoUpdateResource loverPhotoUpdateResource = _mapper.Map<LoverPhotoUpdateResource>(loverPhotoToUpdate);
             patchDoc.ApplyTo(loverPhotoUpdateResource);

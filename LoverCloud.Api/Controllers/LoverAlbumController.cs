@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Authorizations;
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
@@ -18,7 +19,7 @@
 
     [ApiController]
     [Route("api/lovers/albums")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.LoverResourcePolicy)]
     public class LoverAlbumController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -26,18 +27,21 @@
         private readonly ILoverCloudUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPropertyMappingContainer _propertyMappingContainer;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverAlbumController(IUnitOfWork unitOfWork, 
             ILoverAlbumRepository albumRepository,
             ILoverCloudUserRepository userRepository,
             IMapper mapper, 
-            IPropertyMappingContainer propertyMappingContainer)
+            IPropertyMappingContainer propertyMappingContainer,
+            IAuthorizationService authorizationService)
         {
             _unitOfWork=unitOfWork;
             _albumRepository=albumRepository;
             _userRepository=userRepository;
             _mapper=mapper;
             _propertyMappingContainer=propertyMappingContainer;
+            _authorizationService=authorizationService;
         }
 
 
@@ -51,6 +55,7 @@
             if (album == null) return NotFound();
 
             LoverAlbumResource albumResource = _mapper.Map<LoverAlbumResource>(album);
+            albumResource.PhotosCount = await _albumRepository.GetPhotosCount(albumResource.Id);
             ExpandoObject shapedAlbumResource = albumResource.ToDynamicObject(fields)
                 .AddLinks(this, fields, "album", "GetLoverAlbum", "DeleteLoverAlbum", "PartiallyUpdateLoverAlbum");
 
@@ -69,6 +74,14 @@
 
             IEnumerable<LoverAlbumResource> albumResources = 
                 _mapper.Map<IEnumerable<LoverAlbumResource>>(sortedAlbums);
+
+            foreach (LoverAlbumResource source in albumResources)
+            {
+                source.PhotosCount = await _albumRepository.GetPhotosCount(source.Id);
+                LoverPhoto converImage = await _albumRepository.GetCoverImage(source.Id);
+                if (converImage != null)
+                    source.CoverImageUrl = Url.Link("GetPhoto", new { id = converImage.Id });
+            }
 
             IEnumerable<ExpandoObject> shapedAlbumResources = albumResources
                 .ToDynamicObject(parameters.Fields)
@@ -99,7 +112,7 @@
                 return UnprocessableEntity(ModelState);
 
             LoverCloudUser user = await GetUserAsync();
-            if (user.Lover == null) return UserNoLoverResult(user);
+            //if (user.Lover == null) return UserNoLoverResult(user);
 
             LoverAlbum album = _mapper.Map<LoverAlbum>(addResource);
             album.Creater = user;
@@ -129,8 +142,11 @@
 
             if (albumToDelete == null) return NotFound();
 
-            if (albumToDelete.Creater.Id != this.GetUserId())
-                return Forbid("没有权限删除");
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, albumToDelete, Operations.Delete);
+            if(!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
 
             _albumRepository.Delete(albumToDelete);
 
@@ -152,7 +168,10 @@
         {
             LoverAlbum album = await _albumRepository.FindByIdAsync(id);
             if (album == null) return NotFound();
-            //if (!(album.Creater.Id == id)) return Forbid();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, album, Operations.Update);
+            if (!authorizationResult.Succeeded) return Forbid();
+
             LoverAlbumUpdateResource loverAlbumUpdateResource = _mapper.Map<LoverAlbumUpdateResource>(album);
             patchDoc.ApplyTo(loverAlbumUpdateResource);
             _mapper.Map(loverAlbumUpdateResource, album);
@@ -167,7 +186,5 @@
         {
             return _userRepository.FindByIdAsync(this.GetUserId());
         }
-
-        private IActionResult UserNoLoverResult(LoverCloudUser user) => Forbid($"用户 {user} 还没有情侣, 无法操作资源");
     }
 }

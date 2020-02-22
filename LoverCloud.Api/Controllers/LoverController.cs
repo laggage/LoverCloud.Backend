@@ -18,7 +18,7 @@
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
           
-        public LoverController(LoverCloudUserManager userManager,
+        public LoverController(UserManager<LoverCloudUser> userManager,
             ILoverRepository loverRepository,
             IUnitOfWork unitOfWork,
             IMapper mapper)

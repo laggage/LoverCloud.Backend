@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.IO;
 
-    public class LoverPhoto : IEntity
+    public class LoverPhoto : IEntity, ILoverResource
     {
         public LoverPhoto()
         {
@@ -47,7 +47,7 @@
 
         public string AlbumId { get; set; }
         public virtual LoverAlbum Album { get; set; }
-
+        public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
 
         public virtual LoverLog LoverLog { get; set; }

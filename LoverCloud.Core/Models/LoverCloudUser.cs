@@ -49,6 +49,7 @@
         /// 表示用户头像所在物理路径
         /// </summary>
         public string ProfileImagePhysicalPath { get; set; }
+        public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
         /// <summary>
         /// 发出的情侣请求
@@ -76,6 +77,8 @@
         public virtual IList<LoverLog> LoverLogs { get; set; }
 
         public string UserPhysicalDirectory => Path.Combine("UserResources", $"{UserName}-{Id}");
+
+        
 
         public LoverCloudUser GetSpouse()
         {

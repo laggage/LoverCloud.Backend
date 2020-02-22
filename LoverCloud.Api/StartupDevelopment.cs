@@ -2,6 +2,7 @@
 {
     using AutoMapper;
     using FluentValidation.AspNetCore;
+    using LoverCloud.Api.Authorizations.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;
@@ -56,6 +57,8 @@
                     options.User.AllowedUserNameCharacters = string.Empty;
                 })
                 .AddEntityFrameworkStores<LoverCloudDbContext>();
+
+            services.AddAppAuthorization();
 
             services.AddRepositories();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

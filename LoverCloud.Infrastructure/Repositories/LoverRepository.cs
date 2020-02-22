@@ -20,7 +20,6 @@
             return _dbContext.Lovers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-
         public void Add(Lover entity)
         {
             _dbContext.Lovers.Add(entity);

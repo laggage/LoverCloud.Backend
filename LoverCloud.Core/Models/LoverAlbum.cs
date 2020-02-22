@@ -7,7 +7,7 @@
     /// <summary>
     /// 情侣相册
     /// </summary>
-    public class LoverAlbum : IEntity
+    public class LoverAlbum : IEntity, ILoverResource
     {
         public LoverAlbum()
         {
@@ -46,7 +46,6 @@
         /// 相册创建人
         /// </summary>
         public virtual LoverCloudUser Creater { get; set; }
-
         /// <summary>
         /// 相册标签
         /// </summary>

@@ -2,9 +2,7 @@
 {
     using FluentValidation;
     using LoverCloud.Core.Models;
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
     public class LoverAlbumResource : Resource
     {
@@ -20,6 +18,18 @@
         /// 相册创建日期
         /// </summary>
         public string CreateDate { get; set; }
+        /// <summary>
+        /// 相册封面图片地址
+        /// </summary>
+        public string CoverImageUrl { get; set; }
+        /// <summary>
+        /// 相册中的照片总数
+        /// </summary>
+        public int PhotosCount { get; set; }
+        /// <summary>
+        /// 创建本相册的用户Id
+        /// </summary>
+        public string CreaterId { get; set; }
         /// <summary>
         /// 相册中的照片
         /// </summary>

@@ -12,7 +12,9 @@
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -54,12 +56,12 @@
         public async Task<IActionResult> GetProfileImage([FromRoute]string userId)
         {
             if (string.IsNullOrEmpty(userId)) return BadRequest("user id not assigned");
-            string loggedUserId = this.GetUserId();
+            //string loggedUserId = this.GetUserId();
             LoverCloudUser user = await _repository.FindByIdAsync(userId);
 
             if (user.Lover == null) return this.UserNoLoverResult(user);
             // 只允许本人或其情侣获取自己或对方的头像...
-            if (userId != loggedUserId && user.GetSpouse()?.Id != loggedUserId) return Forbid();
+            // if (userId != loggedUserId && user.GetSpouse()?.Id != loggedUserId) return Forbid();
 
             if (user == null) return NotFound($"找不到id为 {userId} 的用户");
 
@@ -148,23 +150,37 @@
                 userResource.Spouse.ReceivedLoverRequests = null;
             }
 
-            if (userResource.LoverRequests.Count > 0)
+            if (userResource.LoverRequests != null && userResource.LoverRequests.Count > 0)
             {
                 foreach (var loverRequest in userResource.LoverRequests)
                 {
                     loverRequest.Requester = null;
-                    if (userResource.Spouse != null) 
+                    if (userResource.Spouse != null)
                         loverRequest.Receiver = null;
                 }
             }
+            if(userResource.ReceivedLoverRequests != null && userResource.ReceivedLoverRequests.Count > 0)
+            {
+                userResource.ReceivedLoverRequests = userResource.ReceivedLoverRequests.Select(s =>
+                {
+                    s.Requester = null;
+                    return s;
+                }).ToList();
+            }
 
             userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
-            userResource.Spouse.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Spouse.Id });
-            userResource.Spouse.LoverAlbumCount = userResource.LoverAlbumCount = await _albumRepository.CountAsync(user.Lover.Id);
-            userResource.Spouse.LoverLogCount = userResource.LoverLogCount = await _logRepository.CountAsync(user.Lover.Id);
-            userResource.Spouse.LoverAnniversaryCount = userResource.LoverAnniversaryCount = await _anniversaryRepository.CountAsync(user.Lover.Id);
-            
-            var shapedUserResource = userResource.ToDynamicObject(fields);
+            if(userResource.Spouse != null)
+            {
+                userResource.Spouse.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Spouse.Id });
+                userResource.Spouse.LoverAlbumCount = userResource.LoverAlbumCount = await _albumRepository.CountAsync(user.Lover.Id);
+                userResource.Spouse.LoverLogCount = userResource.LoverLogCount = await _logRepository.CountAsync(user.Lover.Id);
+                userResource.Spouse.LoverAnniversaryCount = userResource.LoverAnniversaryCount = await _anniversaryRepository.CountAsync(user.Lover.Id);
+            }
+
+            var shapedUserResource = userResource.ToDynamicObject(fields.Contains("spouse,") || string.IsNullOrEmpty(fields) ? fields.Replace("spouse,", ""):fields);
+            if (userResource.Spouse != null)
+                (shapedUserResource as IDictionary<string, object>).Add("spouse", userResource.Spouse.ToDynamicObject(
+                $"sex, userName, birth, id, profileImageUrl"));
 
             return Ok(shapedUserResource);
         }

@@ -90,7 +90,7 @@
     /// <summary>
     /// 情侣纪念日表
     /// </summary>
-    public class LoverAnniversary : IEntity
+    public class LoverAnniversary : IEntity, ILoverResource
     {
         public LoverAnniversary()
         {
@@ -103,6 +103,8 @@
         public string Id { get; set; }
         public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
+        public string CreaterId { get; set; }
+        public virtual LoverCloudUser Creater { get; set; }
         /// <summary>
         /// 纪念日名称
         /// </summary>

@@ -20,6 +20,7 @@
                 .HasConversion(new EnumToStringConverter<Sex>());
             builder.HasOne(x => x.Lover)
                 .WithMany(x => x.LoverCloudUsers)
+                .HasForeignKey(x => x.LoverId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

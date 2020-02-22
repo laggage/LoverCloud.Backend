@@ -7,5 +7,7 @@
     {
         Task<PaginatedList<LoverAlbum>> GetLoverAlbumsAsync(string userId, LoverAlbumParameters parameters);
         Task<int> CountAsync(string loverId);
+        Task<LoverPhoto> GetCoverImage(string albumId);
+        Task<int> GetPhotosCount(string albumId);
     }
 }

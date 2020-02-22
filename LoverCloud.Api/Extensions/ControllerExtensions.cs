@@ -23,6 +23,11 @@
                         ClaimTypes.NameIdentifier, StringComparison.OrdinalIgnoreCase))
                 ?.Value;
 
+        public static string GetUserId(this ClaimsPrincipal user) => user.Claims.FirstOrDefault(
+                    x => x.Type.Equals(
+                        ClaimTypes.NameIdentifier, StringComparison.OrdinalIgnoreCase))
+                ?.Value;
+
         public static IActionResult UserNoLoverResult(
             this ControllerBase contorllerBase, LoverCloudUser user) =>
             contorllerBase.Forbid($"用户 {user?.ToString()??string.Empty} 还没有情侣, 无法操作资源");

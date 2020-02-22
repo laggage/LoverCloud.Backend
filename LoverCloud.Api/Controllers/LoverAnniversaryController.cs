@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Authorizations;
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
@@ -26,18 +27,21 @@
         private readonly IMapper _mapper;
         private readonly ILoverCloudUserRepository _userRepository;
         private readonly IPropertyMappingContainer _propertyMappingContainer;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverAnniversaryController(IUnitOfWork unitOfWork,
             ILoverAnniversaryRepository anniversaryRepository,
             IMapper mapper,
             ILoverCloudUserRepository userRepository,
-            IPropertyMappingContainer propertyMappingContainer)
+            IPropertyMappingContainer propertyMappingContainer,
+            IAuthorizationService authorizationService)
         {
             _unitOfWork=unitOfWork;
             _anniversaryRepository=anniversaryRepository;
             _mapper=mapper;
             _userRepository=userRepository;
             _propertyMappingContainer=propertyMappingContainer;
+            _authorizationService=authorizationService;
         }
 
         /// <summary>
@@ -81,8 +85,11 @@
             LoverAnniversary anniversary = await _anniversaryRepository.FindByIdAsync(id);
             if (anniversary == null) return NotFound();
 
-            if (!anniversary.Lover.HasUser(this.GetUserId()))
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, anniversary, Operations.Delete);
+            if (!authorizationResult.Succeeded)
+            {
                 return Forbid();
+            }
 
             _anniversaryRepository.Delete(anniversary);
             if (!await _unitOfWork.SaveChangesAsync())
@@ -105,6 +112,13 @@
             LoverAnniversary anniversary = await _anniversaryRepository.FindByIdAsync(id);
 
             if (anniversary == null) return NotFound();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User, anniversary, Operations.Update);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
 
             LoverAnniversaryUpdateResource anniversaryResource = _mapper.Map<LoverAnniversaryUpdateResource>(anniversary);
             patchDoc.ApplyTo(anniversaryResource);

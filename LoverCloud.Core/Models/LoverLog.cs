@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class LoverLog : IEntity
+    public class LoverLog : IEntity, ILoverResource
     {
         public LoverLog()
         {

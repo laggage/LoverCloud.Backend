@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authorizations\Interfaces\" />
+    <Folder Include="Authorizations\Requirments\" />
+    <Folder Include="Authorizations\Services\" />
     <Folder Include="LoverCloudResources\" />
   </ItemGroup>
 

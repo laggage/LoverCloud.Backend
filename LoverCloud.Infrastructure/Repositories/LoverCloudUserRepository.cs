@@ -19,10 +19,13 @@
         {
             return _dbContext.Users
                 .Include(x => x.LoverRequests)
+                .Include(x => x.ReceivedLoverRequests)
                 .Include(x => x.Lover)
                 .ThenInclude(x => x.LoverCloudUsers)
                 .Include(x => x.Lover)
                 .ThenInclude(x => x.LoveDay)
+                .Include(x => x.Lover)
+                .ThenInclude(x => x.CoverImage)
                 .Include(x => x.Lover)
                 .ThenInclude(x => x.WeddingDay)
                 .FirstOrDefaultAsync(x => x.Id == id);

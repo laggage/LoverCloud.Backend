@@ -10,6 +10,7 @@
     public class LoverAlbumRepository : ILoverAlbumRepository
     {
         private readonly LoverCloudDbContext _dbContext;
+        protected object sync = new object();
 
         public LoverAlbumRepository(LoverCloudDbContext dbContext)
         {
@@ -19,6 +20,7 @@
         public async Task<PaginatedList<LoverAlbum>> GetLoverAlbumsAsync(string userId, LoverAlbumParameters parameters)
         {
             IQueryable<LoverAlbum> query = _dbContext.LoverAlbums
+                .Include(x => x.Tags)
                 .Include(x => x.Lover).ThenInclude(x => x.LoverCloudUsers)
                 .Where(x => x.Lover.LoverCloudUsers.Any(user => user.Id == userId));
 
@@ -58,6 +60,16 @@
         public Task<int> CountAsync(string loverId)
         {
             return _dbContext.LoverAlbums.Where(x => x.LoverId == loverId).CountAsync();
+        }
+
+        public Task<LoverPhoto> GetCoverImage(string albumId)
+        {
+            return _dbContext.LoverPhotos.FirstOrDefaultAsync(x => x.AlbumId == albumId);
+        }
+
+        public Task<int> GetPhotosCount(string albumId)
+        {
+            return _dbContext.LoverPhotos.Where(x => x.AlbumId == albumId).CountAsync();
         }
     }
 }

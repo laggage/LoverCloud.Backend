@@ -13,6 +13,8 @@
         public string Url { get; set; }
         public DateTime PhotoTakenDate { get; set; }
         public LoverAlbumResource Album { get; set; }
+        public string AlbumId { get; set; }
+        public string UploaderId { get; set; }
         public IList<TagResource> Tags { get; set; }
     }
 

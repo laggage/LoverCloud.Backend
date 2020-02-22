@@ -42,5 +42,9 @@
         /// 女方是否为初恋
         /// </summary>
         public bool IsGirlFirstLove { get; set; }
+        /// <summary>
+        /// 封面图片
+        /// </summary>
+        public string CoverImageId { get; set; }
     }
 }
