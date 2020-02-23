@@ -47,7 +47,8 @@
                 .HasMaxLength(LoverPhoto.PhotoPhysicalPathMaxLength);
 
             builder.HasOne(o => o.Lover)
-                .WithMany(o => o.LoverPhotos);
+                .WithMany(o => o.LoverPhotos)
+                .HasForeignKey(o => o.LoverId);
             builder.HasOne(o => o.Album)
                 .WithMany(o => o.Photos)
                 .HasForeignKey(o => o.AlbumId);

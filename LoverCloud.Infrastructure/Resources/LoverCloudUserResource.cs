@@ -15,7 +15,7 @@
         /// </summary>
         public Sex Sex { get; set; }
         public DateTime Birth { get; set; }
-        public IList<MenstruationLogResource> MenstruationLogs { get; set; }
+        //public IList<MenstruationLogResource> MenstruationLogs { get; set; }
         public LoverCloudUserResource Spouse { get; set; }
         public IList<LoverRequestResource> ReceivedLoverRequests { get; set; }
         public IList<LoverRequestResource> LoverRequests { get; set; }

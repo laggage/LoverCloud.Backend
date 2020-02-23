@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Authorizations;
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
@@ -11,8 +12,10 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -29,6 +32,7 @@
         private readonly ILoverLogRepository _logRepository;
         private readonly ILoverAnniversaryRepository _anniversaryRepository;
         private readonly ILoverAlbumRepository _albumRepository;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverCloudUserController(
             UserManager<LoverCloudUser> userManager,
@@ -37,7 +41,8 @@
             IUnitOfWork unitOfWork,
             ILoverLogRepository logRepository,
             ILoverAnniversaryRepository anniversaryRepository,
-            ILoverAlbumRepository albumRepository)
+            ILoverAlbumRepository albumRepository,
+            IAuthorizationService authorizationService)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -46,6 +51,7 @@
             _logRepository=logRepository;
             _anniversaryRepository=anniversaryRepository;
             _albumRepository=albumRepository;
+            _authorizationService=authorizationService;
         }
 
         /// <summary>
@@ -136,8 +142,8 @@
         /// <param name="fields"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string fields)
+        [HttpGet("login")]
+        public async Task<IActionResult> Login([FromQuery]string fields)
         {
             string id = this.GetUserId();
             if (string.IsNullOrEmpty(id)) return Unauthorized();
@@ -177,12 +183,70 @@
                 userResource.Spouse.LoverAnniversaryCount = userResource.LoverAnniversaryCount = await _anniversaryRepository.CountAsync(user.Lover.Id);
             }
 
-            var shapedUserResource = userResource.ToDynamicObject(fields.Contains("spouse,") || string.IsNullOrEmpty(fields) ? fields.Replace("spouse,", ""):fields);
+            var shapedUserResource = userResource.ToDynamicObject(fields?.Contains("spouse,") ?? false  ? fields.Replace("spouse,", ""):fields);
             if (userResource.Spouse != null)
                 (shapedUserResource as IDictionary<string, object>).Add("spouse", userResource.Spouse.ToDynamicObject(
                 $"sex, userName, birth, id, profileImageUrl"));
 
             return Ok(shapedUserResource);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute]string id)
+        {
+            LoverCloudUser user = await _repository.FindByIdAsync(id);
+            LoverCloudUserResource userResource = _mapper.Map<LoverCloudUserResource>(user);
+            userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
+
+            ExpandoObject shapedUser = userResource.ToDynamicObject("id, profileImageUrl, username");
+
+            return Ok(shapedUser);
+        }
+
+        /// <summary>
+        /// 查询用户信息接口, 查询参数fields可以为 null 或者 id,username, profileImageUrl, sex
+        /// </summary>
+        /// <param name="parameters">fields字段只支持 id,username, profileImageUrl </param>
+        /// <returns></returns>
+        [HttpGet(Name = "GetUsers")]
+        public async Task<IActionResult> Get([FromQuery]LoverCloudUserParameters parameters)
+        {
+            string allowedFields = "id, username, profileImageUrl, sex, spouse";
+            string fields = string.IsNullOrEmpty(parameters.Fields) ? allowedFields : parameters.Fields;
+
+            // 鉴权
+            AuthorizationResult authorizationResult = await _authorizationService.AuthorizeAsync(
+                 User, fields, new LoverCloudUserFieldsRequirement(allowedFields));
+            if (!authorizationResult.Succeeded) return Forbid();
+
+            PaginatedList<LoverCloudUser> users = await _repository.GetAsync(
+                parameters, i => i.Include(x => x.Lover).ThenInclude(x => x.LoverCloudUsers));
+
+            IEnumerable<LoverCloudUserResource> userResources = _mapper.Map<IEnumerable<LoverCloudUserResource>>(users);
+            userResources.GetProfileImageUrl(Url);
+            IEnumerable<ExpandoObject> shapedUserResources = userResources.ToDynamicObject(
+                fields).Select(d =>
+                {
+                    var dict = d as IDictionary<string, object>;
+                    if (dict.ContainsKey("Spouse"))
+                    {
+                        var r = dict["Spouse"] as LoverCloudUserResource;
+                        r.Spouse = null;
+                        r.GetProfileImageUrl(Url);
+                        dict["Spouse"] = r.ToDynamicObject(fields.Replace("spouse", string.Empty));
+                    }
+                    return d;
+                });
+
+            this.AddPaginationHeaderToResponse(users);
+
+            var result = new
+            {
+                links = this.CreatePaginationLinks("GetUsers", parameters, users.HasPrevious, users.HasNext),
+                value = shapedUserResources
+            };
+
+            return Ok(result);
         }
 
         /// <summary>

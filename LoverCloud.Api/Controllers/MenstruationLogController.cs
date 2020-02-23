@@ -1,6 +1,7 @@
 ﻿namespace LoverCloud.Api.Controllers
 {
     using AutoMapper;
+    using LoverCloud.Api.Authorizations;
     using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
@@ -19,7 +20,8 @@
 
     [ApiController]
     [Route("api/menstruationLog")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.LoverResourcePolicy)]
+    [Authorize(Policy = AuthorizationPolicies.MenstruationLogPolicy)]
     public class MenstruationLogController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -48,8 +50,6 @@
                 return UnprocessableEntity(ModelState);
 
             LoverCloudUser user = await _userRepository.FindByIdAsync(this.GetUserId());
-            if (user.Sex == Sex.Male) return BadRequest("该功能仅面向女性");
-            if (user.Lover == null) return this.UserNoLoverResult(user);
 
             MenstruationLog mlog = _mapper.Map<MenstruationLog>(addResource);
             mlog.LoverCloudUser = user;
@@ -70,7 +70,6 @@
         {
             string userId = this.GetUserId();
             LoverCloudUser user = await _userRepository.FindByIdAsync(userId);
-            if (user.Sex == Sex.Male) return Forbid();
 
             MenstruationLog mlog = await _mlogRepository.FindByIdAsync(
                 id, x => x.Include(l => l.LoverCloudUser)
@@ -115,8 +114,6 @@
         public async Task<IActionResult> Get([FromQuery]MenstruationLogParameters parameters)
         {
             string userId = this.GetUserId();
-            LoverCloudUser user = await _userRepository.FindByIdAsync(userId);
-            if (user.Sex == Sex.Male) return Forbid();
 
             PaginatedList<MenstruationLog> mlogs = await _mlogRepository.GetAsync(userId, parameters);
             IEnumerable<MenstruationLog> sortedMlogs = mlogs.AsQueryable()
