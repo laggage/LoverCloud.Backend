@@ -20,7 +20,7 @@
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Receiver)
-                .WithMany(x => x.ReceivedLoverRequests)
+                .WithMany()
                 .HasForeignKey(x => x.ReceiverId)
                 .OnDelete(DeleteBehavior.Cascade);
 

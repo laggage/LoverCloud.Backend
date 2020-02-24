@@ -22,7 +22,6 @@
         {
             return _dbContext.Users
                 .Include(x => x.LoverRequests)
-                .Include(x => x.ReceivedLoverRequests)
                 .Include(x => x.Lover)
                 .ThenInclude(x => x.LoverCloudUsers)
                 .Include(x => x.Lover)

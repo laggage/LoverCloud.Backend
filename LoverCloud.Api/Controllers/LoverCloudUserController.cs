@@ -65,10 +65,6 @@
             //string loggedUserId = this.GetUserId();
             LoverCloudUser user = await _repository.FindByIdAsync(userId);
 
-            if (user.Lover == null) return this.UserNoLoverResult(user);
-            // 只允许本人或其情侣获取自己或对方的头像...
-            // if (userId != loggedUserId && user.GetSpouse()?.Id != loggedUserId) return Forbid();
-
             if (user == null) return NotFound($"找不到id为 {userId} 的用户");
 
             if (string.IsNullOrEmpty(user.ProfileImagePhysicalPath) ||
@@ -146,33 +142,11 @@
         public async Task<IActionResult> Login([FromQuery]string fields)
         {
             string id = this.GetUserId();
-            if (string.IsNullOrEmpty(id)) return Unauthorized();
 
-            var user = await _repository.FindByIdAsync(id);
+            LoverCloudUser user = await _repository.FindByIdAsync(id);
             var userResource = _mapper.Map<LoverCloudUserResource>(user);
             if(userResource.Spouse != null)
-            {
                 userResource.Spouse.Spouse = null;
-                userResource.Spouse.ReceivedLoverRequests = null;
-            }
-
-            if (userResource.LoverRequests != null && userResource.LoverRequests.Count > 0)
-            {
-                foreach (var loverRequest in userResource.LoverRequests)
-                {
-                    loverRequest.Requester = null;
-                    if (userResource.Spouse != null)
-                        loverRequest.Receiver = null;
-                }
-            }
-            if(userResource.ReceivedLoverRequests != null && userResource.ReceivedLoverRequests.Count > 0)
-            {
-                userResource.ReceivedLoverRequests = userResource.ReceivedLoverRequests.Select(s =>
-                {
-                    s.Requester = null;
-                    return s;
-                }).ToList();
-            }
 
             userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
             if(userResource.Spouse != null)
@@ -230,10 +204,12 @@
                     var dict = d as IDictionary<string, object>;
                     if (dict.ContainsKey("Spouse"))
                     {
-                        var r = dict["Spouse"] as LoverCloudUserResource;
-                        r.Spouse = null;
-                        r.GetProfileImageUrl(Url);
-                        dict["Spouse"] = r.ToDynamicObject(fields.Replace("spouse", string.Empty));
+                        if (dict["Spouse"] is LoverCloudUserResource r)
+                        {
+                            r.Spouse = null;
+                            r.GetProfileImageUrl(Url);
+                            dict["Spouse"] = r.ToDynamicObject(fields.Replace("spouse", string.Empty));
+                        }
                     }
                     return d;
                 });
@@ -259,6 +235,10 @@
             [FromBody]JsonPatchDocument<LoverCloudUserUpdateResource> patchDoc)
         {
             LoverCloudUser user = await _repository.FindByIdAsync(this.GetUserId());
+
+            //AuthorizationResult result = await _authorizationService
+            //    .AuthorizeAsync(User, null, new SameUserRequirement(user.Id));
+            //if (!result.Succeeded) return Forbid();
 
             if (user == null)
                 return BadRequest("无法获得用户信息");

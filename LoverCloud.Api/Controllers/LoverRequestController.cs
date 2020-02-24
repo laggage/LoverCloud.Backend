@@ -12,6 +12,11 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using LoverCloud.Api.Authorizations;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Dynamic;
+    using LoverCloud.Infrastructure.Extensions;
 
     [ApiController]
     [Authorize]
@@ -24,13 +29,15 @@
         private readonly ILoverRepository _loverRepository;
         private readonly ILoverCloudUserRepository _userRepository;
         private readonly UserManager<LoverCloudUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public LoverRequestController(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoverRequestRepository repository,
             ILoverRepository loverRepository,
             ILoverCloudUserRepository  userRepository,
-            UserManager<LoverCloudUser> userManager)
+            UserManager<LoverCloudUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -38,6 +45,7 @@
             _loverRepository = loverRepository;
             _userRepository=userRepository;
             _userManager = userManager;
+            _authorizationService=authorizationService;
         }
 
         [HttpPost(Name = "AddLoverRequest")]
@@ -46,8 +54,9 @@
             var requester = await _userRepository.FindByIdAsync(this.GetUserId());
             if (requester == null) return Unauthorized();
             // 被请求方已经接收到过该用户的情侣请求
-            if (requester.LoverRequests.Any(x => x.Requester.Equals(requester)))
-                return NoContent();
+            if (requester.LoverRequests.Any(x => x.ReceiverId.Equals(addResource.ReceiverId)))
+                return BadRequest();
+
             var receiver = await _userManager.FindByIdAsync(addResource.ReceiverId);
             if (receiver == null) return BadRequest($"找不到Guid为 {addResource.ReceiverId} 的用户");
 
@@ -68,6 +77,54 @@
             return CreatedAtRoute("AddLoverRequest", loverRequestResource);
         }
 
+        [HttpGet(Name = "GetLoverRequests")]
+        public async Task<IActionResult> Get(
+            [FromQuery]LoverRequestQueryParameters parameters)
+        {
+            parameters.UserId = string.IsNullOrEmpty(parameters.UserId) ? this.GetUserId() : parameters.UserId;
+            string userId = parameters.UserId;
+            userId = string.IsNullOrEmpty(userId) ? this.GetUserId() : userId;
+            // 鉴权
+            AuthorizationResult authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, null, new SameUserRequirement(userId));
+            if (!authorizationResult.Succeeded) return Forbid();
+
+            PaginatedList<LoverRequest> loverRequests = await _repository.GetAsync(
+                parameters);
+
+            IEnumerable<LoverRequestResource> loverRequestResources = _mapper
+                .Map<IEnumerable<LoverRequestResource>>(loverRequests)
+                .Select(x =>
+                {
+                    x.Requester.ProfileImageUrl =Url.Link("GetProfileImage", new { userId = x.Requester.Id });
+                    x.Receiver.ProfileImageUrl =Url.Link("GetProfileImage", new { userId = x.Receiver.Id });
+                    return x;
+                });
+
+            IEnumerable<ExpandoObject> shapedLoverRequest = loverRequestResources
+                .ToDynamicObject(parameters.Fields).Select(x =>
+                {
+                    var dict = x as IDictionary<string, object>;
+                    if(dict.ContainsKey("Receiver") && dict["Receiver"] is LoverCloudUserResource u)
+                        dict["Receiver"] = u.ToDynamicObject("id, username, profileImageUrl");
+                    if(dict.ContainsKey("Requester") && dict["Requester"] is LoverCloudUserResource uu)
+                        dict["Requester"] =  uu.ToDynamicObject("id, username, profileImageUrl");
+                    return x;
+                });
+
+            this.AddPaginationHeaderToResponse(loverRequests);
+
+            var result = new
+            {
+                links = this.CreatePaginationLinks(
+                    "GetLoverRequests", parameters, 
+                    loverRequests.HasPrevious, loverRequests.HasNext),
+                value = shapedLoverRequest
+            };
+
+            return Ok(result);
+        }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchLoverRequest([FromRoute]string id, [FromBody] JsonPatchDocument<LoverRequestUpdateResource> loverRequestPatchDocument)
         {
@@ -75,13 +132,21 @@
 
             var loverRequestToUpdate = await _repository.FindByIdAsync(id);
             if (loverRequestToUpdate == null) return BadRequest($"找不到对应的 LoverRequest({id})");
-            string userId = this.GetUserId();
-            if (!(loverRequestToUpdate.ReceiverId == userId))
-                return BadRequest("非法用户, 无权操作");
+            
+            AuthorizationResult authorizationResult = await _authorizationService
+                .AuthorizeAsync(
+                User,
+                null,
+                new SameUserRequirement(loverRequestToUpdate.ReceiverId));
+            if (!(authorizationResult.Succeeded))
+                return Forbid();
 
-            var loverRequestToUpdateResource = _mapper.Map<LoverRequestUpdateResource>(loverRequestToUpdate);
+            var loverRequestToUpdateResource = _mapper.Map<LoverRequestUpdateResource>(
+                loverRequestToUpdate);
             loverRequestPatchDocument.ApplyTo(loverRequestToUpdateResource);
             _mapper.Map(loverRequestToUpdateResource, loverRequestToUpdate);
+
+            //if (loverRequestToUpdate.LoverId != null) return BadRequest();
 
             if (loverRequestToUpdateResource.Succeed == true &&
                 loverRequestToUpdate.LoverId == null &&
@@ -102,6 +167,10 @@
                 };
                 loverRequestToUpdate.Lover = lover;
                 _loverRepository.Add(lover);
+            } 
+            else
+            {
+                return BadRequest();
             }
 
             if (!await _unitOfWork.SaveChangesAsync()) throw new Exception("保存数据到数据库失败");

@@ -10,7 +10,7 @@
     {
         public LoverRequest()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             Succeed = null;
         }
 

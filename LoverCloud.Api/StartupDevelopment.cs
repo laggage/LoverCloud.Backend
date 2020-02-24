@@ -3,6 +3,7 @@
     using AutoMapper;
     using FluentValidation.AspNetCore;
     using LoverCloud.Api.Authorizations.Extensions;
+    using LoverCloud.Api.Extensions;
     using LoverCloud.Core.Interfaces;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Database;

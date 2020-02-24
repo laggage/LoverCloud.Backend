@@ -3,6 +3,7 @@
     using AutoMapper;
     using LoverCloud.Core.Models;
     using LoverCloud.Infrastructure.Resources;
+    using Microsoft.AspNetCore.Mvc;
 
     internal class MappingProfile : Profile
     {

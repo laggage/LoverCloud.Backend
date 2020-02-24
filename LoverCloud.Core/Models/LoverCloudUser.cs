@@ -26,7 +26,6 @@
         public LoverCloudUser() : base()
         {
             LoverRequests = new List<LoverRequest>();
-            ReceivedLoverRequests = new List<LoverRequest>();
             MenstruationLogs = new List<MenstruationLog>();
             LoverAlbums = new List<LoverAlbum>();
             LoverPhotos = new List<LoverPhoto>();
@@ -52,13 +51,9 @@
         public string LoverId { get; set; }
         public virtual Lover Lover { get; set; }
         /// <summary>
-        /// 发出的情侣请求
+        /// 情侣请求导航属性
         /// </summary>
         public virtual IList<LoverRequest> LoverRequests { get; set; }
-        /// <summary>
-        /// 接收到的情侣请求
-        /// </summary>
-        public virtual IList<LoverRequest> ReceivedLoverRequests { get; set; }
         /// <summary>
         /// 生理期记录, 只对女用户开放
         /// </summary>
@@ -77,8 +72,6 @@
         public virtual IList<LoverLog> LoverLogs { get; set; }
 
         public string UserPhysicalDirectory => Path.Combine("UserResources", $"{UserName}-{Id}");
-
-        
 
         public LoverCloudUser GetSpouse()
         {

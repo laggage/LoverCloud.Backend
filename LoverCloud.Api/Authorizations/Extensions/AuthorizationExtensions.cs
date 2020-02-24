@@ -11,6 +11,8 @@
             services.AddScoped<IAuthorizationHandler, LoverResourceCrudHandler>();
             services.AddScoped<IAuthorizationHandler, MustFemaleHandler>();
             services.AddSingleton<IAuthorizationHandler, LoverCloudUserFieldsHandler>();
+            services.AddSingleton<IAuthorizationHandler, SameUserHandler>();
+
 
             services.AddAuthorization(options =>
             {
