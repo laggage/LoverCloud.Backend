@@ -80,7 +80,7 @@
                 source.PhotosCount = await _albumRepository.GetPhotosCount(source.Id);
                 LoverPhoto converImage = await _albumRepository.GetCoverImage(source.Id);
                 if (converImage != null)
-                    source.CoverImageUrl = Url.Link("GetPhoto", new { id = converImage.Id });
+                    source.CoverImageUrl = Url.LinkRelative("GetPhoto", new { id = converImage.Id });
             }
 
             IEnumerable<ExpandoObject> shapedAlbumResources = albumResources

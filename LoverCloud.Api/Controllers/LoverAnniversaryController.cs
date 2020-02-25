@@ -189,7 +189,7 @@
         {
             var links = new List<LinkResource>
             {
-                new LinkResource("current_page", "get", Url.Link("GetAnniversaries", parameters))
+                new LinkResource("current_page", "get", Url.LinkRelative("GetAnniversaries", parameters))
             };
 
             if(hasPrevious)
@@ -197,7 +197,7 @@
                 parameters.PageIndex--;
                 links.Add(
                 new LinkResource(
-                    "previous_page", "get", Url.Link("GetAnniversaries", parameters)));
+                    "previous_page", "get", Url.LinkRelative("GetAnniversaries", parameters)));
                 parameters.PageIndex++;
             }
             if (hasNext)
@@ -205,7 +205,7 @@
                 parameters.PageIndex++;
                 links.Add(
                 new LinkResource(
-                    "next_page", "get", Url.Link("GetAnniversaries", parameters)));
+                    "next_page", "get", Url.LinkRelative("GetAnniversaries", parameters)));
                 parameters.PageIndex--;
             }
 
@@ -218,10 +218,10 @@
             {
                 new LinkResource(
                     "delete_anniversary", "delete",
-                    Url.Link("DeleteLoverAnniversary", new { id })),
+                    Url.LinkRelative("DeleteLoverAnniversary", new { id })),
                 new LinkResource(
                     "update_anniversary", "patch",
-                    Url.Link("PartiallyUpdateLoverAnniversary", new { id })),
+                    Url.LinkRelative("PartiallyUpdateLoverAnniversary", new { id })),
             };
         }
     }

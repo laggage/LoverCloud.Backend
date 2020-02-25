@@ -18,7 +18,8 @@
             this LoverCloudUserResource user, IUrlHelper url)
         {
             if (url == null) throw new ArgumentNullException(nameof(url));
-            user.ProfileImageUrl = url.Link("GetProfileImage", new { userId = user.Id });
+            // 生成相对url路径, 因为生成环境可能使用反向代理
+            user.ProfileImageUrl = url.LinkRelative("GetProfileImage", new { userId = user.Id });
         }
 
         public static void GetProfileImageUrl(

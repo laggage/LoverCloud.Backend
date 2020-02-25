@@ -116,7 +116,7 @@
             loverPhoto.Lover = lover;
             loverPhoto.PhysicalPath = loverPhoto.GeneratePhotoPhysicalPath(file.GetFileSuffix()); ;
             loverPhoto.UpdateDate = DateTime.Now;
-            loverPhoto.PhotoUrl = Url.Link("GetPhoto", new {id = loverPhoto.Id});
+            loverPhoto.PhotoUrl = Url.LinkRelative("GetPhoto", new {id = loverPhoto.Id});
             // 添加到数据库
             _repository.Add(loverPhoto);
             if (!await _unitOfWork.SaveChangesAsync())

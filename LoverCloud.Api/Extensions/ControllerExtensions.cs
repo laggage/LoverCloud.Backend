@@ -54,9 +54,9 @@
             IUrlHelper url = controller.Url;
             return new LinkResource[]
             {
-                string.IsNullOrEmpty(getRouteName) ? new LinkResource("self", "get", url.Link(getRouteName, new {id, fields})) : null,
-                string.IsNullOrEmpty(deleteRouteName) ? new LinkResource($"delete_{resourceName}", "delete", url.Link(deleteRouteName, new {id})): null,
-                string.IsNullOrEmpty(updateRouteName) ? new LinkResource($"update_{resourceName}", "patch", url.Link(updateRouteName, new{ id })) : null,
+                string.IsNullOrEmpty(getRouteName) ? new LinkResource("self", "get", url.LinkRelative(getRouteName, new {id, fields})) : null,
+                string.IsNullOrEmpty(deleteRouteName) ? new LinkResource($"delete_{resourceName}", "delete", url.LinkRelative(deleteRouteName, new {id})): null,
+                string.IsNullOrEmpty(updateRouteName) ? new LinkResource($"update_{resourceName}", "patch", url.LinkRelative(updateRouteName, new{ id })) : null,
             };
         }
 
@@ -66,21 +66,21 @@
         {
             var links = new List<LinkResource>
             {
-                new LinkResource("current_page", "get", controller.Url.Link(routeName, parameters))
+                new LinkResource("current_page", "get", controller.Url.LinkRelative(routeName, parameters))
             };
 
             if(hasPrevious)
             {
                 parameters.PageIndex--;
                 links.Add(
-                    new LinkResource("previous_page", "get", controller.Url.Link(routeName, parameters)));
+                    new LinkResource("previous_page", "get", controller.Url.LinkRelative(routeName, parameters)));
                 parameters.PageIndex++;
             }
             if (hasNext)
             {
                 parameters.PageIndex--;
                 links.Add(
-                    new LinkResource("next_page", "get", controller.Url.Link(routeName, parameters)));
+                    new LinkResource("next_page", "get", controller.Url.LinkRelative(routeName, parameters)));
                 parameters.PageIndex++;
             }
             return links;

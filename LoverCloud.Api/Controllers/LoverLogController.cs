@@ -66,7 +66,7 @@
                 {
                     Parallel.ForEach(x.LoverPhotos, photo =>
                     {
-                        photo.Url = Url.Link("GetPhoto", new { id = photo.Id });
+                        photo.Url = Url.LinkRelative("GetPhoto", new { id = photo.Id });
                     });
                     return x;
                 });

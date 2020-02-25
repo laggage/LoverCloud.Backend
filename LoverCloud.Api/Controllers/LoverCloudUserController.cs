@@ -148,10 +148,10 @@
             if(userResource.Spouse != null)
                 userResource.Spouse.Spouse = null;
 
-            userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
-            if(userResource.Spouse != null)
+            userResource.GetProfileImageUrl(Url);
+            if (userResource.Spouse != null)
             {
-                userResource.Spouse.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Spouse.Id });
+                userResource.Spouse.GetProfileImageUrl(Url);
                 userResource.Spouse.LoverAlbumCount = userResource.LoverAlbumCount = await _albumRepository.CountAsync(user.Lover.Id);
                 userResource.Spouse.LoverLogCount = userResource.LoverLogCount = await _logRepository.CountAsync(user.Lover.Id);
                 userResource.Spouse.LoverAnniversaryCount = userResource.LoverAnniversaryCount = await _anniversaryRepository.CountAsync(user.Lover.Id);
@@ -170,7 +170,7 @@
         {
             LoverCloudUser user = await _repository.FindByIdAsync(id);
             LoverCloudUserResource userResource = _mapper.Map<LoverCloudUserResource>(user);
-            userResource.ProfileImageUrl = Url.Link("GetProfileImage", new { userId = userResource.Id });
+            userResource.GetProfileImageUrl(Url);
 
             ExpandoObject shapedUser = userResource.ToDynamicObject("id, profileImageUrl, username");
 

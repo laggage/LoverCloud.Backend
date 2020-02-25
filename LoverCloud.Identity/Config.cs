@@ -29,24 +29,24 @@ namespace LoverCloud.Identity
         public static IEnumerable<LoverCloudUser> Users =>
             new LoverCloudUser[]
             {
-                new LoverCloudUser
-                {
-                    UserName = "陈畏民",
-                    Email = "1634205628@qq.com",
-                    PhoneNumber = "13814307540",
-                    Birth=DateTime.Parse("1998-11-29"),
-                    RegisterDate = DateTime.Now,
-                    Sex = Sex.Male
-                },
-                new LoverCloudUser
-                {
-                    UserName = "朱容容",
-                    Email = "1324323815@qq.com",
-                    PhoneNumber = "15751118812",
-                    RegisterDate = DateTime.Now,
-                    Sex = Sex.Female,
-                    Birth=DateTime.Parse("1999-2-9"),
-                }
+                //new LoverCloudUser
+                //{
+                //    UserName = "陈畏民",
+                //    Email = "1634205628@qq.com",
+                //    PhoneNumber = "13814307540",
+                //    Birth=DateTime.Parse("1998-11-29"),
+                //    RegisterDate = DateTime.Now,
+                //    Sex = Sex.Male
+                //},
+                //new LoverCloudUser
+                //{
+                //    UserName = "朱容容",
+                //    Email = "1324323815@qq.com",
+                //    PhoneNumber = "15751118812",
+                //    RegisterDate = DateTime.Now,
+                //    Sex = Sex.Female,
+                //    Birth=DateTime.Parse("1999-2-9"),
+                //}
             };
             
 

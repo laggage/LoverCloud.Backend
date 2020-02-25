@@ -96,8 +96,8 @@
                 .Map<IEnumerable<LoverRequestResource>>(loverRequests)
                 .Select(x =>
                 {
-                    x.Requester.ProfileImageUrl =Url.Link("GetProfileImage", new { userId = x.Requester.Id });
-                    x.Receiver.ProfileImageUrl =Url.Link("GetProfileImage", new { userId = x.Receiver.Id });
+                    x.Requester.GetProfileImageUrl(Url);
+                    x.Receiver.GetProfileImageUrl(Url);
                     return x;
                 });
 
