@@ -7,7 +7,7 @@ namespace LoverCloud.Api
     using Serilog;
     using Serilog.Events;
 
-    internal class Program
+    internal static class Program
     {
         public static int Main(string[] args)
         {
@@ -35,7 +35,7 @@ namespace LoverCloud.Api
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

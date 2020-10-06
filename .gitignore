@@ -3,8 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-connectionString.txt
 LoverCloudResources/
+
+**appsettings.[Dd]evlopment.json
 
 # User-specific files
 *.rsuser
